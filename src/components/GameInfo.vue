@@ -6,6 +6,7 @@ import type { Aoe2CmEvent, Aoe2CmDraftOption } from '../entities/aoe2cm'
 import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
 import debounce from 'lodash.debounce'
 import CivIcon from './CivIcon.vue'
+import { extractDraftId } from '../utils'
 
 const props = defineProps<{
   games: Game[]
@@ -15,22 +16,18 @@ const props = defineProps<{
 
 const player1 = defineModel('player1')
 const player2 = defineModel('player2')
+const mapsDraftURI = defineModel<string>('mapDraft')
+const civDraftURI = defineModel<string>('civDraft')
 const emit = defineEmits<{
   updateMeta: [ReplayErrors, ReplayMetadata]
 }>()
 
-const mapsDraftURI = ref()
-const civDraftURI = ref()
 const meta: Ref<ReplayMetadata> = ref({ maps: null, civs: null })
 
 const errors: Ref<ReplayErrors> = ref({
   maps: null,
   civs: null
 })
-
-const extractDraftId = (url: string) => {
-  return url.replace(/https:\/\/aoe2cm\.net\/(draft|spectate)\//, '').replace(/\/$/, '')
-}
 
 const debouncedFetchMaps = debounce(async () => {
   meta.value.maps = null
@@ -72,13 +69,16 @@ const debouncedFetchMaps = debounce(async () => {
   const picks = json.events.filter((event: Aoe2CmEvent) => event.actionType == 'pick')
   const pickedMaps = picks.map((event: Aoe2CmEvent) => event.chosenOptionId)
 
-  meta.value.maps = {
-    draft: draftId,
-    preset: json.preset.presetId,
-    host: json.nameHost,
-    guest: json.nameGuest,
-    availableMaps: availableMaps,
-    pickedMaps: pickedMaps
+  meta.value = {
+    maps: {
+      draft: draftId,
+      preset: json.preset.presetId,
+      host: json.nameHost,
+      guest: json.nameGuest,
+      availableMaps: availableMaps,
+      pickedMaps: pickedMaps
+    },
+    civs: meta.value.civs
   }
   emit('updateMeta', errors.value, meta.value)
 }, 300)
@@ -122,19 +122,39 @@ const debouncedFetchCivs = debounce(async () => {
     .filter((event: Aoe2CmEvent) => event.player == 'GUEST')
     .map((event: Aoe2CmEvent) => event.chosenOptionId)
 
-  meta.value.civs = {
-    draft: draftId,
-    preset: json.preset.presetId,
-    host: json.nameHost,
-    guest: json.nameGuest,
-    hostCivs: pickedCivsHost,
-    guestCivs: pickedCivsGuest
+  meta.value = {
+    maps: meta.value.maps,
+    civs: {
+      draft: draftId,
+      preset: json.preset.presetId,
+      host: json.nameHost,
+      guest: json.nameGuest,
+      hostCivs: pickedCivsHost,
+      guestCivs: pickedCivsGuest
+    }
   }
   emit('updateMeta', errors.value, meta.value)
 }, 300)
 
 watch(mapsDraftURI, debouncedFetchMaps)
 watch(civDraftURI, debouncedFetchCivs)
+watch(meta, () => {
+  if (meta.value.maps?.host) {
+    if (player1.value == 'Player1') {
+      player1.value = meta.value.maps.host
+    }
+    if (player2.value == 'Player2') {
+      player2.value = meta.value.maps.guest
+    }
+  } else if (meta.value.civs?.host) {
+    if (player1.value == 'Player1') {
+      player1.value = meta.value.civs.host
+    }
+    if (player2.value == 'Player2') {
+      player2.value = meta.value.civs.guest
+    }
+  }
+})
 </script>
 
 <template>

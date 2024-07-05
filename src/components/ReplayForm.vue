@@ -7,6 +7,7 @@ import { saveAs } from 'file-saver'
 import GameInfo from './GameInfo.vue'
 import GameBox from './GameBox.vue'
 import PreviewPane from './PreviewPane.vue'
+import RecentDrafts from './RecentDrafts.vue'
 import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
 
 import { Game, Replay, zipFilename, computeReplayFilename } from '../entities/game'
@@ -18,6 +19,8 @@ const props = defineProps<{
 
 const player1 = ref('Player1')
 const player2 = ref('Player2')
+const mapDraft: Ref<string> = ref('')
+const civDraft: Ref<string> = ref('')
 const games: Ref<Game[]> = ref([new Game(), new Game(), new Game()])
 const meta: Ref<ReplayMetadata> = ref({ maps: null, civs: null })
 const metaErrors: Ref<ReplayErrors> = ref({ maps: null, civs: null })
@@ -131,10 +134,24 @@ function downloadZip() {
 </script>
 
 <template>
+  <Suspense>
+    <RecentDrafts
+      v-if="mapPresets || civPresets"
+      :civ-presets="civPresets"
+      :map-presets="mapPresets"
+      v-model:map-draft="mapDraft"
+      v-model:civ-draft="civDraft"
+    />
+    <template #fallback>
+      <div class="text-center p-4 border-2 col-span-3 mt-4 h-80">Loading Drafts...</div>
+    </template>
+  </Suspense>
   <GameInfo
     :games="games"
     v-model:player1="player1"
     v-model:player2="player2"
+    v-model:map-draft="mapDraft"
+    v-model:civ-draft="civDraft"
     :civ-presets="civPresets"
     :map-presets="mapPresets"
     @update-meta="

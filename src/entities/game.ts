@@ -1,4 +1,4 @@
-import unidecode from 'unidecode';
+import unidecode from 'unidecode'
 
 let gameCounter = 0
 let replayCounter = 0
@@ -22,7 +22,6 @@ export class Replay {
   }
 }
 
-
 function normalizePlayerName(playerName: string, defaultName: string) {
   const asciiName = unidecode(playerName)
   const noWhitespaceName = asciiName.replace(/\s/g, '')
@@ -31,9 +30,9 @@ function normalizePlayerName(playerName: string, defaultName: string) {
   const normalizedName = noUnprintableName.replace(/[<>:"/\\|?*]/g, '')
 
   if (normalizedName.length == 0) {
-    return defaultName;
+    return defaultName
   } else {
-    return normalizedName;
+    return normalizedName
   }
 }
 
@@ -75,7 +74,13 @@ export function computeReplayFilenamePreview(
   replay: Replay,
   replayIdx: number
 ) {
-  const filename = computeReplayFilename(normalizePlayerName(player1, 'Player1'), normalizePlayerName(player2, 'Player2'), game, gameIdx, replayIdx)
+  const filename = computeReplayFilename(
+    normalizePlayerName(player1, 'Player1'),
+    normalizePlayerName(player2, 'Player2'),
+    game,
+    gameIdx,
+    replayIdx
+  )
   const dummyIndicator = replay.file ? '' : ' (dummy file)'
 
   return `${filename}${dummyIndicator}`

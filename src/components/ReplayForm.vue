@@ -3,9 +3,11 @@ import { ref, computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import type { Tournament } from 'virtual:tournaments-data'
 
 import GameInfo from './GameInfo.vue'
 import SetInfo from './SetInfo.vue'
+import TournamentSet from './TournamentSet.vue'
 import GameDropzone from './GameDropzone.vue'
 import GameTable from './GameTable.vue'
 import ZipPreviewPane from './ZipPreviewPane.vue'
@@ -14,6 +16,8 @@ import DiscordMessage from './DiscordMessage.vue'
 import ToggleButton from '@/components/ToggleButton.vue'
 import { useGamesStore } from '@/stores/games'
 import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
+import { expandSetAbbreviation } from '@/entities/set'
+import type { SetType } from '@/entities/set'
 
 import { zipFilename, computeReplayFilename } from '../entities/game'
 import { extractDraftUrl } from '../entities/draft'
@@ -22,6 +26,7 @@ import { getRandomInt } from '../lib/maths'
 const props = defineProps<{
   civPresets: string[] | null
   mapPresets: string[] | null
+  tournament?: Tournament
 }>()
 
 const gamesStore = useGamesStore()
@@ -40,6 +45,25 @@ const meta: Ref<ReplayMetadata> = ref({
 })
 const metaErrors: Ref<ReplayErrors> = ref({ maps: null, civs: null })
 const showResults = ref(true)
+
+const setTypeRestrictions = computed((): SetType[] | undefined => {
+  if (!props.tournament) {
+    return
+  }
+  return [
+    ...new Set(
+      Object.keys(props.tournament.maps).map((key) => {
+        const [setType, setLength] = expandSetAbbreviation(key)
+        return {
+          label:
+            setType[0].toUpperCase() + setType.substring(1).replace('-', ' ') + ` ${setLength}`,
+          type: setType,
+          length: setLength
+        }
+      })
+    )
+  ]
+})
 
 const downloadWarningReplayMissing = computed(() => {
   if (boPa.value == 'best-of') {
@@ -222,6 +246,36 @@ ${boPaLabel} ${expectedGamesCount.value}
 Map draft: ${extractDraftUrl(mapDraft.value)}
 Civ draft: ${extractDraftUrl(civDraft.value)}`
 })
+
+function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
+  if (!props.tournament && newMeta?.maps?.pickedMaps?.length) {
+    const numOfMaps = newMeta.maps.pickedMaps.length
+    if (numOfMaps % 2 == 0) {
+      setExpectedGamesCount(numOfMaps + 1)
+    } else {
+      setExpectedGamesCount(numOfMaps)
+    }
+  }
+  meta.value = newMeta
+  metaErrors.value = newErrors
+  if (!props.tournament || !meta.value.maps?.preset) {
+    return
+  }
+  const presetToSetType = Object.fromEntries(
+    Object.entries(props.tournament.maps).map(([setType, preset]) => [
+      preset,
+      expandSetAbbreviation(setType)
+    ])
+  )
+  if (!(meta.value.maps.preset in presetToSetType)) {
+    console.error('Map preset is not in the tournament set, but it should')
+    return
+  }
+
+  const [setType, setLength] = presetToSetType[meta.value.maps.preset]
+  setExpectedGamesCount(setLength)
+  boPa.value = setType
+}
 </script>
 
 <template>
@@ -246,24 +300,20 @@ Civ draft: ${extractDraftUrl(civDraft.value)}`
     :civ-presets="civPresets"
     :map-presets="mapPresets"
     :bo-pa="boPa"
-    @update-meta="
-      (newErrors: ReplayErrors, newMeta: ReplayMetadata) => {
-        if (newMeta?.maps?.pickedMaps?.length) {
-          const numOfMaps = newMeta.maps.pickedMaps.length
-          if (numOfMaps % 2 == 0) {
-            setExpectedGamesCount(numOfMaps + 1)
-          } else {
-            setExpectedGamesCount(numOfMaps)
-          }
-        }
-        meta = newMeta
-        metaErrors = newErrors
-      }
-    "
+    @update-meta="updateMeta"
   />
 
   <SetInfo
+    v-if="!setTypeRestrictions"
     :games-count="expectedGamesCount"
+    @set-games="setExpectedGamesCount"
+    @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
+  />
+  <TournamentSet
+    v-else
+    :set-types="setTypeRestrictions"
+    :type="boPa"
+    :length="expectedGamesCount"
     @set-games="setExpectedGamesCount"
     @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
   />

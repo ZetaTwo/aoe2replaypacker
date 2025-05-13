@@ -48,11 +48,35 @@ export class Team {
     this.players = players
     this.winner = players.some((player) => !player.resigned)
   }
+
+  asGameWinner(side: 'left' | 'right'): GameWinner {
+    const sortedPlayers = this.players.toSorted((p1, p2) => p1.profile.localeCompare(p2.profile))
+    return {
+      team_id: this.id,
+      side: side,
+      firstPlayer: sortedPlayers[0],
+      players: sortedPlayers
+    }
+  }
 }
+
+export type GameWinner =
+  | {
+      team_id: null
+      side: 'none'
+      firstPlayer: null
+      players: []
+    }
+  | {
+      team_id: Team['id']
+      side: 'left' | 'right'
+      firstPlayer: Player
+      players: Player[]
+    }
 
 export class Game {
   replays: Replay[] = []
-  winner: 'left' | 'none' | 'right'
+  winner: GameWinner
   id: number
   date?: Date
   mapName?: string
@@ -61,7 +85,12 @@ export class Game {
 
   constructor(replays: Replay[] | null = null) {
     this.id = gameCounter++
-    this.winner = 'none'
+    this.winner = {
+      team_id: null,
+      side: 'none',
+      firstPlayer: null,
+      players: []
+    }
     this.duration = 0
     if (Array.isArray(replays)) {
       this.replays = replays
@@ -73,6 +102,7 @@ export class Game {
       const recording = this.replays[0].recording
       if ('dummy' in recording) {
         this.date = new Date(recording.header.timestamp)
+        this.teams = dummyTeams()
         return
       }
       const { date, mapName, duration, teams } = extractRecordingInfo(recording)
@@ -86,19 +116,27 @@ export class Game {
 
   setWinner() {
     if (this.teams && this.teams[0] && this.teams[0].winner) {
-      this.winner = 'left'
+      this.winner = this.teams[0].asGameWinner('left')
     }
     if (
       this.teams &&
       this.teams[this.teams.length - 1] &&
       this.teams[this.teams.length - 1].winner
     ) {
-      this.winner = 'right'
+      this.winner = this.teams[this.teams.length - 1].asGameWinner('right')
     }
   }
 
   isDummy() {
     return this.replays.length == 0 || this.replays.findIndex((replay) => !!replay.recording) == -1
+  }
+
+  isUnparseable() {
+    return (
+      !this.mapName &&
+      this.replays.length > 0 &&
+      this.replays.every((replay) => 'dummy' in replay.recording)
+    )
   }
 
   matchesRecording(recording: SavegameSummary | DummyReplay) {
@@ -229,6 +267,13 @@ function getTeams(teams: SavegameTeam[]) {
       )
     )
   })
+}
+
+function dummyTeams() {
+  return [
+    new Team(1, [new Player(1, '', '__dummy1__', '__dummy_civ__', 1, 1, false)]),
+    new Team(2, [new Player(2, '', '__dummy2__', '__dummy_civ__', 2, 2, false)])
+  ]
 }
 
 export function extractRecordingInfo(recording: SavegameSummary) {

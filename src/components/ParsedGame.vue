@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
 import GameReorder from '@/components/GameReorder.vue'
 import GameToolbox from '@/components/GameToolbox.vue'
-import type { Game } from '@/entities/game'
+import type { Game, GameWinner } from '@/entities/game'
 import GameTeam from '@/components/GameTeam.vue'
 import ExpandButton from '@/components/ExpandButton.vue'
 import winner from '@/assets/crown.svg'
@@ -23,7 +23,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  setWinner: [winner: 'left' | 'none' | 'right']
+  setWinner: [winner: GameWinner]
   move: [direction: 'up' | 'down']
 }>()
 
@@ -37,13 +37,6 @@ const rightName = computed(() => {
   const teamsCount = props.game.teams.length
   return props.game.teams[teamsCount - 1]?.players?.[0]?.name
 })
-
-const isUnparseable = computed(
-  () =>
-    !props.game.mapName &&
-    props.game.replays.length > 0 &&
-    props.game.replays.every((replay) => 'dummy' in replay.recording)
-)
 
 const replayExpandText = computed(
   () => `${props.game.replays.length} replay${props.game.replays.length > 1 ? 's' : ''}`
@@ -66,7 +59,10 @@ function moveGameReplay(replayId: number, targetGame: number) {
     />
     <GameToolbox class="absolute right-0 top-1" :game-index="props.index" />
     <h3 class="text-center text-2xl">Game {{ props.index + 1 }}</h3>
-    <h4 class="text-center text-lg text-yellow-500 dark:text-yellow-200" v-if="isUnparseable">
+    <h4
+      class="text-center text-lg text-yellow-500 dark:text-yellow-200"
+      v-if="props.game.isUnparseable()"
+    >
       Unparseable game
     </h4>
     <h4 class="text-center text-lg">{{ props.game.mapName }}</h4>
@@ -89,8 +85,8 @@ function moveGameReplay(replayId: number, targetGame: number) {
           :id="`winner-${props.game.id}`"
           :name="`winlose-${props.game.id}`"
           class="peer hidden"
-          @change="emit('setWinner', 'left')"
-          :checked="props.game.winner == 'left'"
+          @change="emit('setWinner', props.game.teams![0].asGameWinner('left'))"
+          :checked="props.game.winner.side == 'left'"
           :value="'left'"
         />
         <label
@@ -98,7 +94,7 @@ function moveGameReplay(replayId: number, targetGame: number) {
           class="inline-flex items-center justify-center w-full p-2 bg-white border-r border-l-2 border-y-2 rounded-l-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
         >
           <img
-            :src="props.game.winner == 'left' ? winner : loser"
+            :src="props.game.winner.side == 'left' ? winner : loser"
             width="35"
             height="35"
             class="-mt-1 -mb-1"
@@ -112,8 +108,10 @@ function moveGameReplay(replayId: number, targetGame: number) {
           :id="`loser-${props.game.id}`"
           :name="`winlose-${props.game.id}`"
           class="peer hidden"
-          @change="emit('setWinner', 'right')"
-          :checked="props.game.winner == 'right'"
+          @change="
+            emit('setWinner', props.game.teams![props.game.teams!.length - 1].asGameWinner('right'))
+          "
+          :checked="props.game.winner.side == 'right'"
           :value="'right'"
         />
         <label
@@ -122,7 +120,7 @@ function moveGameReplay(replayId: number, targetGame: number) {
         >
           {{ rightName }}
           <img
-            :src="props.game.winner == 'right' ? winner : loser"
+            :src="props.game.winner.side == 'right' ? winner : loser"
             width="35"
             height="35"
             class="-mt-1 -mb-1"
@@ -130,7 +128,7 @@ function moveGameReplay(replayId: number, targetGame: number) {
         </label>
       </div>
     </div>
-    <div v-if="isUnparseable" class="w-full mt-4">
+    <div v-if="props.game.isUnparseable()" class="w-full mt-4">
       <p class="text-center text-sm text-gray-500 dark:text-gray-400">
         This recording <strong>could not be parsed</strong> by the replay packer.
       </p>

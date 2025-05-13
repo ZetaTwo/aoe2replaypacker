@@ -18,7 +18,7 @@ import { useGamesStore } from '@/stores/games'
 import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
 import { MatchSetDefinition, MatchSetType } from '@/entities/matchset'
 
-import { zipFilename, computeReplayFilename } from '../entities/game'
+import { zipFilename, computeReplayFilename, Player } from '@/entities/game'
 import { extractDraftUrl } from '../entities/draft'
 import { getRandomInt } from '../lib/maths'
 
@@ -68,11 +68,77 @@ const downloadWarningReplayMissing = computed(() => {
   return false
 })
 
+const winCount = computed(() => {
+  return gamesStore.games.reduce(
+    (count, game) => {
+      if (game.winner.side == 'none') {
+        return count
+      }
+      return {
+        ...count,
+        [game.winner.firstPlayer.profile]: (count[game.winner.firstPlayer.profile] ?? 0) + 1
+      }
+    },
+    {} as Record<Player['profile'], number>
+  )
+})
+
+const playerSide = computed(() => {
+  if (
+    gamesStore.games.length == 0 ||
+    !gamesStore.games[0].teams ||
+    gamesStore.games[0].teams.length < 2
+  ) {
+    return ''
+  }
+  const isPlayer = (draftPlayer: typeof player1 | typeof player2) => (player: Player) =>
+    player.name.toLowerCase().includes(draftPlayer.value.toLowerCase()) ||
+    draftPlayer.value.toLowerCase().includes(player.name.toLowerCase())
+  for (const game of gamesStore.games) {
+    if (game.isUnparseable() || game.isDummy()) {
+      continue
+    }
+    const profile1 = game.teams?.[0].asGameWinner('left').firstPlayer?.profile
+    const profile2 = game.teams?.[game.teams.length - 1].asGameWinner('right').firstPlayer?.profile
+    const first_team_p1_match = game.teams?.[0].players.find(isPlayer(player1))
+    if (first_team_p1_match) {
+      return { left: profile1, right: profile2 }
+    }
+    const last_team_p2_match = game.teams?.[game.teams.length - 1].players.find(isPlayer(player2))
+    if (last_team_p2_match) {
+      return { left: profile1, right: profile2 }
+    }
+    const fist_team_p2_match = game.teams?.[0].players.find(isPlayer(player2))
+    if (fist_team_p2_match) {
+      return { left: profile2, right: profile1 }
+    }
+    const last_team_p1_match = game.teams?.[game.teams.length - 1].players.find(isPlayer(player1))
+    if (last_team_p1_match) {
+      return { left: profile2, right: profile1 }
+    }
+  }
+  for (const game of gamesStore.games) {
+    if (game.isUnparseable() || game.isDummy()) {
+      continue
+    }
+    return {
+      left: game.teams![0].asGameWinner('left').firstPlayer?.profile,
+      right: game.teams![game.teams!.length - 1].asGameWinner('left').firstPlayer?.profile
+    }
+  }
+  return { left: '__dummy1__', right: '__dummy2__' }
+})
 const leftScore = computed(() => {
-  return gamesStore.games.filter((game) => game.winner == 'left').length
+  if (!playerSide.value) {
+    return 0
+  }
+  return (winCount.value[playerSide.value.left ?? ''] ?? 0) + (winCount.value['__dummy1__'] ?? 0)
 })
 const rightScore = computed(() => {
-  return gamesStore.games.filter((game) => game.winner == 'right').length
+  if (!playerSide.value) {
+    return 0
+  }
+  return (winCount.value[playerSide.value.right ?? ''] ?? 0) + (winCount.value['__dummy2__'] ?? 0)
 })
 
 watch([leftScore, rightScore], ([newLeftScore, newRightScore], [oldLeftScore, oldRightScore]) => {

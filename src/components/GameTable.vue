@@ -2,6 +2,7 @@
 import DummyGame from '@/components/DummyGame.vue'
 import ParsedGame from '@/components/ParsedGame.vue'
 import { useGamesStore } from '@/stores/games'
+import type { GameWinner } from '@/entities/game'
 
 const gamesStore = useGamesStore()
 
@@ -24,7 +25,7 @@ const { showResults = true } = defineProps<{
       :index="index"
       :num-games="gamesStore.realGamesCount"
       :show-results="showResults"
-      @set-winner="(winner: 'left' | 'none' | 'right') => (game.winner = winner)"
+      @set-winner="(winner: GameWinner) => (game.winner = winner)"
       @move="(direction: 'up' | 'down') => gamesStore.moveGame(index, direction == 'up' ? -1 : 1)"
     >
     </component>

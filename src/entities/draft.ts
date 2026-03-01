@@ -12,6 +12,13 @@ export type draft = {
   nameGuest: string
 }
 
+export type draftV2 = {
+  draftId: string
+  ts: number
+  host: string
+  guest: string
+}
+
 function getDraftType(draft: draft, mapPresets: string[], civPresets: string[]) {
   if (mapPresets.includes(draft.presetId)) {
     return DraftType.Map

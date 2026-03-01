@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { type draft, getDraftTypeLabel, extractDraftId } from '../entities/draft'
+import pMap from 'p-map'
+import { type draft, type draftV2, getDraftTypeLabel, extractDraftId } from '../entities/draft'
+
+const MAX_CONCURRENT_API_REQUESTS = 4
 
 const props = defineProps<{
   civPresets: string[] | null
   mapPresets: string[] | null
 }>()
-const mapPresets = props.mapPresets ?? []
-const civPresets = props.civPresets ?? []
+const mapPresets = computed(() => props.mapPresets ?? [])
+const civPresets = computed(() => props.civPresets ?? [])
+
+const presets = computed(() => [...mapPresets.value, ...civPresets.value])
 
 const mapDraftURI = defineModel<string>('mapDraft')
 const civDraftURI = defineModel<string>('civDraft')
@@ -15,16 +20,36 @@ const civDraftURI = defineModel<string>('civDraft')
 const currentMapDraftId = computed(() => extractDraftId(mapDraftURI.value))
 const currentCivDraftId = computed(() => extractDraftId(civDraftURI.value))
 
+const fetchDraftsFromPresetIds = async (presetId: string) => {
+  const presetURL = `https://aoe2cm.net/api/preset/${presetId}/drafts`
+  const response = await fetch(presetURL)
+  if (!response.ok) {
+    return []
+  }
+  const drafts = ((await response.json()) as draftV2[]).map((draft) => {
+    return {
+      draftId: draft.draftId,
+      presetId: presetId,
+      // The preset-specific endpoint does not return a title so we make up a sensible one
+      title: `${draft.host} vs ${draft.guest}`,
+      nameHost: draft.host,
+      nameGuest: draft.guest
+    }
+  })
+  return drafts
+}
+
 const recentDrafts = await (async () => {
-  const response = await fetch('https://aoe2cm.net/api/recentdrafts')
-  const drafts = (await response.json()) as draft[]
-  return drafts.filter(
-    (draft) => civPresets.includes(draft.presetId) || mapPresets.includes(draft.presetId)
-  )
+  const drafts = (
+    await pMap(presets.value, fetchDraftsFromPresetIds, {
+      concurrency: MAX_CONCURRENT_API_REQUESTS
+    })
+  ).flat(1)
+  return drafts
 })()
 
 function selectDraft(draft: draft) {
-  if (mapPresets.includes(draft.presetId)) {
+  if (mapPresets.value.includes(draft.presetId)) {
     if (mapDraftURI.value == draft.draftId) {
       mapDraftURI.value = ''
     } else {

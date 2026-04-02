@@ -71,14 +71,14 @@ jobs:
     steps:
       - name: Download main artifact
         id: download-main
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: 'github-pages-main'
           path: 'github-pages-main'
 
       - name: Download beta artifact
         id: download-beta
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: 'github-pages-beta'
           path: 'github-pages-beta'

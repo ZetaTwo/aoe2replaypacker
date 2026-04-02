@@ -30,17 +30,17 @@ jobs:
     steps:
       - name: Checkout main branch
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ matrix.page.branch }}
 
       - name: Setup NodeJS
         id: setup-node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
 
       - name: Setup Pages
         id: setup-pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Install dependencies
         id: install-dependencies
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload artifact
         id: upload-artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
           name: 'github-pages-${{ matrix.page.branch }}'
@@ -92,7 +92,7 @@ jobs:
           tar -C dist/beta -xf "${{ steps.download-beta.outputs.download-path }}/artifact.tar"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
@@ -107,4 +107,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -42,11 +42,11 @@ export class Player {
 export class Team {
   id: number
   players: Player[]
-  winner: boolean
+  survivor: boolean
   constructor(team_id: number, players: Player[]) {
     this.id = team_id
     this.players = players
-    this.winner = players.some((player) => !player.resigned)
+    this.survivor = players.some((player) => !player.resigned)
   }
 
   asGameWinner(side: 'left' | 'right'): GameWinner {
@@ -113,11 +113,10 @@ export class Game {
 
   setWinner() {
     const left_team = this.teams[0]
-    if (left_team?.winner) {
-      this.outcome = left_team.asGameWinner('left')
-    }
     const right_team = this.teams[this.teams.length - 1]
-    if (right_team?.winner) {
+    if (left_team?.survivor && !right_team?.survivor) {
+      this.outcome = left_team.asGameWinner('left')
+    } else if (right_team?.survivor && !left_team?.survivor) {
       this.outcome = right_team.asGameWinner('right')
     }
   }

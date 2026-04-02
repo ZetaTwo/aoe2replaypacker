@@ -5,8 +5,68 @@ import {
   zipFilename,
   computeReplayFilename,
   Game,
+  Player,
+  Team,
   Replay
 } from './game'
+
+function makePlayer(name: string, resigned: boolean): Player {
+  return new Player(1, name, name, 'Britons', 1, 1, resigned)
+}
+
+function makeGame(leftResigned: boolean, rightResigned: boolean): Game {
+  const game = new Game()
+  game.teams = [
+    new Team(1, [makePlayer('Alice', leftResigned)]),
+    new Team(2, [makePlayer('Bob', rightResigned)])
+  ]
+  return game
+}
+
+describe('Team.survivor', () => {
+  it('is true when no players have resigned', () => {
+    const team = new Team(1, [makePlayer('Alice', false), makePlayer('Bob', false)])
+    expect(team.survivor).toBe(true)
+  })
+
+  it('is true when at least one player has not resigned', () => {
+    const team = new Team(1, [makePlayer('Alice', true), makePlayer('Bob', false)])
+    expect(team.survivor).toBe(true)
+  })
+
+  it('is false when all players have resigned', () => {
+    const team = new Team(1, [makePlayer('Alice', true), makePlayer('Bob', true)])
+    expect(team.survivor).toBe(false)
+  })
+})
+
+describe('Game.setWinner', () => {
+  it('sets left team as winner when right team resigned', () => {
+    const game = makeGame(false, true)
+    game.setWinner()
+    expect(game.outcome?.side).toBe('left')
+    expect(game.outcome?.team_id).toBe(1)
+  })
+
+  it('sets right team as winner when left team resigned', () => {
+    const game = makeGame(true, false)
+    game.setWinner()
+    expect(game.outcome?.side).toBe('right')
+    expect(game.outcome?.team_id).toBe(2)
+  })
+
+  it('sets no winner when neither team has resigned', () => {
+    const game = makeGame(false, false)
+    game.setWinner()
+    expect(game.outcome).toBeNull()
+  })
+
+  it('sets no winner when both teams have resigned', () => {
+    const game = makeGame(true, true)
+    game.setWinner()
+    expect(game.outcome).toBeNull()
+  })
+})
 
 describe('normalizePlayerName', () => {
   it('does not modify acceptable name', () => {

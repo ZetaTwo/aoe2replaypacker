@@ -8,10 +8,9 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 import tournamentsData from './rollup-plugin-tournaments'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import wasm from 'vite-plugin-wasm'
-import topLevelAwait from 'vite-plugin-top-level-await'
 
 export default defineConfig({
-  plugins: [vue(), VueDevTools(), imagetools(), tournamentsData(), wasm(), topLevelAwait(), viteStaticCopy({
+  plugins: [vue(), VueDevTools(), imagetools(), tournamentsData(), wasm(), viteStaticCopy({
     targets: [
       {
         src: "node_modules/libarchive.js/dist/libarchive.wasm",

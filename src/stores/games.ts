@@ -113,14 +113,23 @@ export const useGamesStore = defineStore('games', () => {
     }
   }
 
+  // TODO: file issues to add these to the lib
+  type CompressedFile = { name: string; extract: () => Promise<File> }
+  type ArchiveEntry = { file: CompressedFile; path: string }
+
   async function expandArchive(file: File) {
     const { Archive } = await import('libarchive.js')
     Archive.init({ workerUrl: webworker })
     const archiveData = await Archive.open(file)
-    const files: { string: File } = await archiveData.extractFiles()
-    Object.values(files)
-      .filter((rec) => rec.name.endsWith('.aoe2record'))
-      .forEach((rec) => addRec(rec))
+
+    const filesList: ArchiveEntry[] = await archiveData.getFilesArray()
+    const recFiles = await Promise.all(
+      filesList
+        .filter((f) => f.file.name.endsWith('.aoe2record'))
+        .sort((a, b) => a.file.name.localeCompare(b.file.name))
+        .map((f) => f.file.extract())
+    )
+    await Promise.all(recFiles.map((rec) => addRec(rec)))
   }
 
   const hasGames = computed(() => Object.values(recordings.value).length > 0)

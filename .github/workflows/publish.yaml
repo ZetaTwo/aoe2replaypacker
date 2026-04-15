@@ -34,15 +34,16 @@ jobs:
         with:
           ref: ${{ matrix.page.branch }}
 
-      - name: Setup NodeJS
-        id: setup-node
-        uses: actions/setup-node@v6
-
       - name: Setup pnpm
         id: setup-pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10
+
+      - name: Setup NodeJS
+        id: setup-node
+        uses: actions/setup-node@v6
+          cache: "pnpm"
 
       - name: Setup Pages
         id: setup-pages

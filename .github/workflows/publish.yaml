@@ -43,6 +43,7 @@ jobs:
       - name: Setup NodeJS
         id: setup-node
         uses: actions/setup-node@v6
+        with:
           cache: "pnpm"
 
       - name: Setup Pages

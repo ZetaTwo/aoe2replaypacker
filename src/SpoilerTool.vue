@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import SpoilerInstructionBox from '@/components/spoilers/SpoilerInstructionBox.vue'
+import SpoilerInstructions from '@/components/spoilers/SpoilerInstructions.vue'
 import SpoilerForm from '@/components/spoilers/SpoilerForm.vue'
 </script>
 
 <template>
   <div class="lg:container lg:mx-auto lg:max-w-(--breakpoint-lg)">
     <main class="mt-10">
-      <SpoilerInstructionBox />
+      <SpoilerInstructions />
       <SpoilerForm />
     </main>
     <footer>

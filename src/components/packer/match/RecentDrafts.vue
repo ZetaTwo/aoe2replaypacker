@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import pMap from 'p-map'
-import { type draft, type draftV2, getDraftTypeLabel, extractDraftId } from '../entities/draft'
+import { type draft, type draftV2, getDraftTypeLabel, extractDraftId } from '@/entities/draft'
 
 const MAX_CONCURRENT_API_REQUESTS = 4
 const MAX_DRAFT_AGE_SECONDS = 60 * 60 * 24

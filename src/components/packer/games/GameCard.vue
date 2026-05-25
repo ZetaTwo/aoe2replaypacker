@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
-import GameReorder from '@/components/GameReorder.vue'
-import GameToolbox from '@/components/GameToolbox.vue'
+import GameOrderControls from './GameOrderControls.vue'
+import GameActions from './GameActions.vue'
 import { type Game, type GameOutcome, dummyWinner } from '@/entities/game'
-import GameTeam from '@/components/GameTeam.vue'
-import ExpandButton from '@/components/ExpandButton.vue'
+import GameTeam from './GameTeam.vue'
+import ExpandButton from '@/components/common/ExpandButton.vue'
 import winner from '@/assets/crown.svg'
 import loser from '@/assets/skull.svg'
 import { computed, ref } from 'vue'
 import { readableSize } from '@/lib/maths'
-import MoveButton from '@/components/MoveButton.vue'
-import MoveModal from '@/components/MoveReplayModal.vue'
-import GameDate from './GameDate.vue'
+import MoveReplayButton from './MoveReplayButton.vue'
+import MoveReplayModal from './MoveReplayModal.vue'
+import RelativeDate from '@/components/common/RelativeDate.vue'
 import { useGamesStore } from '@/stores/games'
 
 const props = defineProps<{
@@ -51,13 +51,13 @@ function moveGameReplay(replayId: number, targetGame: number) {
 </script>
 <template>
   <div>
-    <GameReorder
+    <GameOrderControls
       class="absolute left-0 top-0"
       :top="props.index == 0"
       :bottom="props.index + 1 == props.numGames"
       @move="(direction: 'up' | 'down') => emit('move', direction)"
     />
-    <GameToolbox class="absolute right-0 top-1" :game-index="props.index" />
+    <GameActions class="absolute right-0 top-1" :game-index="props.index" />
     <h3 class="text-center text-2xl">Game {{ props.index + 1 }}</h3>
     <h4
       v-if="props.game.isUnparseable()"
@@ -67,7 +67,7 @@ function moveGameReplay(replayId: number, targetGame: number) {
     </h4>
     <h4 class="text-center text-lg">{{ props.game.mapName }}</h4>
     <p v-if="props.game.date" class="text-center text-sm text-gray-500 dark:text-gray-400">
-      Played <game-date :date="props.game.date" /> and lasted
+      Played <RelativeDate :date="props.game.date" /> and lasted
       {{ format(new UTCDate(props.game.duration), 'HH:mm:ss') }}
     </p>
     <p
@@ -173,8 +173,8 @@ function moveGameReplay(replayId: number, targetGame: number) {
             class="flex gap-2 mb-2 flex-row items-center"
           >
             {{ replay.file.name }} ({{ readableSize(replay.file.size) }})
-            <move-button @click="showModal = replay.id" />
-            <move-modal
+            <MoveReplayButton @click="showModal = replay.id" />
+            <MoveReplayModal
               :show="showModal == replay.id"
               :current-game="props.index"
               :total-games="props.numGames"

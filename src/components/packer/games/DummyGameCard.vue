@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GameToolbox from '@/components/GameToolbox.vue'
+import GameActions from './GameActions.vue'
 import type { Game } from '@/entities/game'
 
 const props = defineProps<{
@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 <template>
   <div>
-    <GameToolbox class="absolute right-0 top-1" :game-index="props.index" :show-clear="false" />
+    <GameActions class="absolute right-0 top-1" :game-index="props.index" :show-clear="false" />
     <h3 class="text-center text-2xl">Game {{ props.index + 1 }}</h3>
     <h4 class="text-center text-lg">Placeholder game</h4>
     <p class="text-center text-sm text-gray-500 dark:text-gray-400">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import ExpandButton from '@/components/ExpandButton.vue'
+import ExpandButton from '@/components/common/ExpandButton.vue'
 
 const expanded = ref(false)
 defineProps<{

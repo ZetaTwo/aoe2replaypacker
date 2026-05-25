@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Game, computeReplayFilename } from '../entities/game'
+import { Game, computeReplayFilename } from '@/entities/game'
 
 const props = defineProps<{
   player1: string

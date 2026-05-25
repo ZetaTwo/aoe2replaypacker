@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import InstructionBox from '@/components/InstructionBox.vue'
-import ReplayForm from '@/components/ReplayForm.vue'
+import PackerInstructions from '@/components/packer/PackerInstructions.vue'
+import PackerForm from '@/components/packer/PackerForm.vue'
 import tournamentsData from 'virtual:tournaments-data'
 import type { Tournament } from 'virtual:tournaments-data'
 
@@ -44,8 +44,8 @@ const tournamentTitle = getTournamentTitle(tournament)
 <template>
   <div class="lg:container lg:mx-auto lg:max-w-(--breakpoint-lg)">
     <main class="mt-10">
-      <InstructionBox :tournament-title="tournamentTitle" />
-      <ReplayForm
+      <PackerInstructions :tournament-title="tournamentTitle" />
+      <PackerForm
         :civ-presets="civDraftPresets"
         :map-presets="mapDraftPresets"
         :tournament="tournament"

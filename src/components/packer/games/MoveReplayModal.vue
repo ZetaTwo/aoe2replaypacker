@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Game, type Replay } from '@/entities/game'
 import { computed, ref } from 'vue'
-import GameTeam from '@/components/GameTeam.vue'
-import GameDate from '@/components/GameDate.vue'
+import GameTeam from './GameTeam.vue'
+import RelativeDate from '@/components/common/RelativeDate.vue'
 import { format } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
 
@@ -79,7 +79,7 @@ const replayInfo = computed<Game>(() => new Game([props.replay]))
                 class="p-0"
               />
               <p>
-                Played on {{ replayInfo.mapName }} <game-date :date="replayInfo.date" /> and was
+                Played on {{ replayInfo.mapName }} <RelativeDate :date="replayInfo.date" /> and was
                 {{ format(new UTCDate(replayInfo.duration), 'HH:mm:ss') }} long.
               </p>
             </div>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import SpoilerDropZone from '@/components/spoilers/SpoilerDropZone.vue'
+import SpoilerDropzone from '@/components/spoilers/SpoilerDropzone.vue'
 import SpoilerDownload from '@/components/spoilers/SpoilerDownload.vue'
 </script>
 
 <template>
-  <SpoilerDropZone />
+  <SpoilerDropzone />
   <SpoilerDownload />
 </template>

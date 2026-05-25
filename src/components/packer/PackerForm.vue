@@ -5,22 +5,22 @@ import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import type { Tournament } from 'virtual:tournaments-data'
 
-import GameInfo from './GameInfo.vue'
-import SetInfo from './SetInfo.vue'
-import TournamentSet from './TournamentSet.vue'
-import GameDropzone from './GameDropzone.vue'
-import GameTable from './GameTable.vue'
-import ZipPreviewPane from './ZipPreviewPane.vue'
-import RecentDrafts from './RecentDrafts.vue'
-import DiscordMessage from './DiscordMessage.vue'
-import ToggleButton from '@/components/ToggleButton.vue'
+import MatchInfoForm from './match/MatchInfoForm.vue'
+import MatchSetPicker from './match/MatchSetPicker.vue'
+import TournamentSetPicker from './match/TournamentSetPicker.vue'
+import RecentDrafts from './match/RecentDrafts.vue'
+import ReplayDropzone from './games/ReplayDropzone.vue'
+import GameList from './games/GameList.vue'
+import ZipPreview from './output/ZipPreview.vue'
+import DiscordMessage from './output/DiscordMessage.vue'
+import ToggleButton from '@/components/common/ToggleButton.vue'
 import { useGamesStore } from '@/stores/games'
-import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
+import type { ReplayMetadata, ReplayErrors } from '@/entities/gamemeta'
 import { MatchSetDefinition, MatchSetType } from '@/entities/matchset'
 
 import { zipFilename, computeReplayFilename, Player } from '@/entities/game'
-import { extractDraftUrl } from '../entities/draft'
-import { getRandomInt } from '../lib/maths'
+import { extractDraftUrl } from '@/entities/draft'
+import { getRandomInt } from '@/lib/maths'
 
 const props = defineProps<{
   civPresets: string[] | null
@@ -379,7 +379,7 @@ function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
       <div class="text-center p-4 border-2 col-span-3 mt-4 h-80">Loading Drafts...</div>
     </template>
   </Suspense>
-  <GameInfo
+  <MatchInfoForm
     v-model:player1="player1"
     v-model:player2="player2"
     v-model:map-draft="mapDraft"
@@ -392,13 +392,13 @@ function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
     @update-meta="updateMeta"
   />
 
-  <SetInfo
+  <MatchSetPicker
     v-if="!setTypeRestrictions"
     :games-count="expectedGamesCount"
     @set-games="setExpectedGamesCount"
     @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
   />
-  <TournamentSet
+  <TournamentSetPicker
     v-else
     :set-types="setTypeRestrictions"
     :type="boPa"
@@ -409,12 +409,12 @@ function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
 
   <ToggleButton v-model="showResults" class="mt-4" label="Show results (spoilers)" />
 
-  <GameDropzone />
-  <GameTable :show-results="showResults" />
+  <ReplayDropzone />
+  <GameList :show-results="showResults" />
 
   <div id=" message_box" class="mt-4 text-center p-4 border-2 rounded-lg col-span-3 hidden"></div>
   <div class="text-center p-4 border-2 rounded-lg col-span-3 mt-4">
-    <ZipPreviewPane :games="gamesStore.games" :player1="player1" :player2="player2" :meta="meta" />
+    <ZipPreview :games="gamesStore.games" :player1="player1" :player2="player2" :meta="meta" />
     <button
       :disabled="!downloadEnabled"
       class="btn mt-3 text-2xl text-white dark:text-black"

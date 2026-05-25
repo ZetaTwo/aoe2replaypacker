@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Game, zipFilename } from '../entities/game'
-import type { ReplayMetadata } from '../entities/gamemeta'
-import ZipPreviewFile from './ZipPreviewFile.vue'
+import { Game, zipFilename } from '@/entities/game'
+import type { ReplayMetadata } from '@/entities/gamemeta'
+import ZipPreviewEntry from './ZipPreviewEntry.vue'
 
 const props = defineProps<{
   games: Game[]
@@ -18,7 +18,7 @@ const props = defineProps<{
     <template v-if="meta.civs || meta.maps"><span>├──metadata.json</span><br /></template>
     <template v-for="(game, gameIdx) in props.games" :key="game.id">
       <template v-if="game.isDummy()">
-        <ZipPreviewFile
+        <ZipPreviewEntry
           :game="game"
           :player1="player1"
           :player2="player2"
@@ -28,7 +28,7 @@ const props = defineProps<{
         /><br />
       </template>
       <template v-for="(replay, replayIdx) in game.replays" v-else :key="replay.id">
-        <ZipPreviewFile
+        <ZipPreviewEntry
           :game="game"
           :player1="player1"
           :player2="player2"

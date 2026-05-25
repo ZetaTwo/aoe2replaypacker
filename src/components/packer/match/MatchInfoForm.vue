@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import type { Aoe2CmEvent, Aoe2CmDraftOption } from '../entities/aoe2cm'
-import type { ReplayMetadata, ReplayErrors } from '../entities/gamemeta'
+import type { Aoe2CmEvent, Aoe2CmDraftOption } from '@/entities/aoe2cm'
+import type { ReplayMetadata, ReplayErrors } from '@/entities/gamemeta'
 import { MatchSetType } from '@/entities/matchset'
 import debounce from 'lodash.debounce'
-import CivIcon from './CivIcon.vue'
-import { extractDraftId } from '../entities/draft'
+import CivIcon from '@/components/common/CivIcon.vue'
+import { extractDraftId } from '@/entities/draft'
 import { civNames } from '@/entities/civs'
 
 const props = defineProps<{

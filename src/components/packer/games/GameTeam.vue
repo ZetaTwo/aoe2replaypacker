@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import CivIcon from '@/components/CivIcon.vue'
-import PlayerColor from '@/components/PlayerColor.vue'
+import CivIcon from '@/components/common/CivIcon.vue'
+import PlayerColor from '@/components/common/PlayerColor.vue'
 import type { Team } from '@/entities/game'
 
 const { team } = defineProps<{

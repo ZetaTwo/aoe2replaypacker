@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DummyGame from '@/components/DummyGame.vue'
-import ParsedGame from '@/components/ParsedGame.vue'
+import DummyGameCard from './DummyGameCard.vue'
+import GameCard from './GameCard.vue'
 import { useGamesStore } from '@/stores/games'
 import type { GameOutcome } from '@/entities/game'
 
@@ -16,7 +16,7 @@ const { showResults = true } = defineProps<{
       No games selected yet.
     </p>
     <component
-      :is="game.isDummy() ? DummyGame : ParsedGame"
+      :is="game.isDummy() ? DummyGameCard : GameCard"
       v-for="(game, index) in gamesStore.games"
       v-else
       :key="game.id"

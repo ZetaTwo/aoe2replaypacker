@@ -11,16 +11,15 @@ const { showResults = true } = defineProps<{
 }>()
 </script>
 <template>
-  <div class="flex flex-col items-center gap-4 p-4 border-2 rounded-lg col-span-3 mt-4">
-    <p v-if="!gamesStore.hasGames" class="text-gray-500 dark:text-gray-400">
-      No games selected yet.
-    </p>
+  <div :class="$style.list">
+    <slot />
+    <p v-if="!gamesStore.hasGames" :class="$style.empty">No games selected yet.</p>
     <component
       :is="game.isDummy() ? DummyGameCard : GameCard"
       v-for="(game, index) in gamesStore.games"
       v-else
       :key="game.id"
-      class="w-full p-6 bg-white border border-gray-200 rounded-lg shadow-xs dark:bg-gray-800 dark:border-gray-700 relative"
+      :class="$style.item"
       :game="game"
       :index="index"
       :num-games="gamesStore.realGamesCount"
@@ -31,3 +30,28 @@ const { showResults = true } = defineProps<{
     </component>
   </div>
 </template>
+
+<style module>
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 2px solid var(--color-border-section);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-4);
+}
+.empty {
+  color: var(--color-text-muted);
+}
+.item {
+  position: relative;
+  width: 100%;
+  padding: var(--space-6);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-section);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+</style>

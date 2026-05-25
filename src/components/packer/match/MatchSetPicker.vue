@@ -74,97 +74,172 @@ watch(boPa, (newBoPa, oldBoPa) => {
 })
 </script>
 <template>
-  <div class="mt-4 text-center">
-    <ul class="w-full gap-6 flex flex-row">
-      <li class="basis-3/11">
-        <div class="block">
-          <div class="inline-flex w-1/2">
+  <div :class="$style.wrap">
+    <ul :class="$style.list">
+      <li :class="$style.bopaCell">
+        <div>
+          <div :class="$style.half">
             <input
               id="best-of"
               v-model="boPa"
               type="radio"
               name="bo-pa"
-              class="hidden peer"
+              :class="$style.input"
               :value="MatchSetType.BestOf"
             />
-            <label
-              for="best-of"
-              class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-r border-l-2 border-y-2 rounded-l-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
-              <div class="text-center w-full text-lg font-semibold">Best of</div>
+            <label for="best-of" :class="[$style.tile, $style.leftJoin]">
+              <div :class="$style.tileLabel">Best of</div>
             </label>
           </div>
-          <div class="inline-flex w-1/2">
+          <div :class="$style.half">
             <input
               id="play-all"
               v-model="boPa"
               type="radio"
               name="bo-pa"
-              class="hidden peer"
+              :class="$style.input"
               :value="MatchSetType.PlayAll"
             />
-            <label
-              for="play-all"
-              class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-l border-r-2 border-y-2 rounded-r-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-            >
-              <div class="text-center w-full text-lg font-semibold">Play all</div>
+            <label for="play-all" :class="[$style.tile, $style.rightJoin]">
+              <div :class="$style.tileLabel">Play all</div>
             </label>
           </div>
         </div>
       </li>
-      <li v-for="count in [3, 5, 7]" :key="count" class="basis-2/11" :value="count">
+      <li v-for="count in [3, 5, 7]" :key="count" :class="$style.cell" :value="count">
         <input
           :id="`bo${count}`"
           v-model="bestOf"
           type="radio"
           name="bo"
           :value="count"
-          class="hidden peer"
+          :class="$style.input"
           required
         />
-        <label
-          :for="`bo${count}`"
-          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
-          <div class="block w-full">
-            <div class="text-center w-full text-lg font-semibold">{{ count }} Games</div>
-          </div>
+        <label :for="`bo${count}`" :class="[$style.tile, $style.standalone]">
+          <div :class="$style.tileLabel">{{ count }} Games</div>
         </label>
       </li>
 
-      <li class="basis-2/11">
+      <li :class="$style.cell">
         <input
           id="bo-custom"
           v-model="bestOf"
           type="radio"
           name="bo"
           value="custom"
-          class="hidden peer"
+          :class="$style.input"
           :checked="bestOf == 'custom'"
         />
-        <label
-          for="bo-custom"
-          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
-          <div class="block w-full">
-            <div class="w-full text-lg font-semibold">
-              <input
-                v-model="customGameCount"
-                class="p-0 w-8 bg-transparent border text-gray-800 text-center focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none dark:text-white"
-                style="-moz-appearance: textfield"
-                type="number"
-                aria-roledescription="Number field"
-                value="9"
-                data-hs-input-number-input=""
-                min="1"
-                max="99"
-                maxlength="2"
-              />
-              Games
-            </div>
+        <label for="bo-custom" :class="[$style.tile, $style.standalone]">
+          <div :class="$style.tileLabel">
+            <input
+              v-model="customGameCount"
+              :class="$style.numberInput"
+              type="number"
+              aria-roledescription="Number field"
+              value="9"
+              data-hs-input-number-input=""
+              min="1"
+              max="99"
+              maxlength="2"
+            />
+            Games
           </div>
         </label>
       </li>
     </ul>
   </div>
 </template>
+
+<style module>
+.wrap {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.bopaCell {
+  flex-basis: 27.27%;
+}
+.cell {
+  flex-basis: 18.18%;
+}
+.half {
+  display: inline-flex;
+  width: 50%;
+}
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-border-default);
+  cursor: pointer;
+}
+.tile:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+.standalone {
+  border-radius: var(--radius-lg);
+}
+.leftJoin {
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+  border-right-width: 1px;
+}
+.rightJoin {
+  border-top-right-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  border-left-width: 1px;
+}
+.input:checked + .tile {
+  color: var(--color-accent-text);
+  border-color: var(--color-border-accent);
+}
+.tileLabel {
+  text-align: center;
+  width: 100%;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+.numberInput {
+  padding: 0;
+  width: 2rem;
+  background-color: transparent;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.numberInput::-webkit-inner-spin-button,
+.numberInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+.numberInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+</style>

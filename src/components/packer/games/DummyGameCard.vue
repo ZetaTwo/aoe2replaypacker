@@ -10,14 +10,14 @@ const props = defineProps<{
 </script>
 <template>
   <div>
-    <GameActions class="absolute right-0 top-1" :game-index="props.index" :show-clear="false" />
-    <h3 class="text-center text-2xl">Game {{ props.index + 1 }}</h3>
-    <h4 class="text-center text-lg">Placeholder game</h4>
-    <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+    <GameActions :class="$style.actions" :game-index="props.index" :show-clear="false" />
+    <h3 :class="$style.title">Game {{ props.index + 1 }}</h3>
+    <h4 :class="$style.subtitle">Placeholder game</h4>
+    <p :class="$style.muted">
       This is a placeholder for a game not played, e.g. because of an admin win, or because the set
       already has a winner from the previous games.
     </p>
-    <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+    <p :class="$style.muted">
       <strong
         >The replay packer will automatically generate a savegame to avoid spoilers for
         casters.</strong
@@ -25,3 +25,24 @@ const props = defineProps<{
     </p>
   </div>
 </template>
+
+<style module>
+.actions {
+  position: absolute;
+  right: 0;
+  top: 0.25rem;
+}
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+}
+.subtitle {
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+.muted {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+</style>

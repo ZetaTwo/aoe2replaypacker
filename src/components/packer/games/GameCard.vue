@@ -52,125 +52,110 @@ function moveGameReplay(replayId: number, targetGame: number) {
 <template>
   <div>
     <GameOrderControls
-      class="absolute left-0 top-0"
+      :class="$style.orderControls"
       :top="props.index == 0"
       :bottom="props.index + 1 == props.numGames"
       @move="(direction: 'up' | 'down') => emit('move', direction)"
     />
-    <GameActions class="absolute right-0 top-1" :game-index="props.index" />
-    <h3 class="text-center text-2xl">Game {{ props.index + 1 }}</h3>
-    <h4
-      v-if="props.game.isUnparseable()"
-      class="text-center text-lg text-yellow-500 dark:text-yellow-200"
-    >
+    <GameActions :class="$style.actions" :game-index="props.index" />
+    <h3 :class="$style.title">Game {{ props.index + 1 }}</h3>
+    <h4 v-if="props.game.isUnparseable()" :class="[$style.subtitle, $style.warning]">
       Unparseable game
     </h4>
-    <h4 class="text-center text-lg">{{ props.game.mapName }}</h4>
-    <p v-if="props.game.date" class="text-center text-sm text-gray-500 dark:text-gray-400">
+    <h4 :class="$style.subtitle">{{ props.game.mapName }}</h4>
+    <p v-if="props.game.date" :class="$style.muted">
       Played <RelativeDate :date="props.game.date" /> and lasted
       {{ format(new UTCDate(props.game.duration), 'HH:mm:ss') }}
     </p>
-    <p
-      v-if="props.game.replays.length > 1"
-      class="text-center text-sm text-gray-500 dark:text-gray-400"
-    >
+    <p v-if="props.game.replays.length > 1" :class="$style.muted">
       Game was restored {{ props.game.replays.length - 1 }} time{{
         props.game.replays.length > 2 ? 's' : ''
       }}
     </p>
-    <div v-if="showResults" class="flex mt-6 pl-6 pr-6">
-      <div class="inline-flex w-1/2 h-full">
+    <div v-if="showResults" :class="$style.winnerRow">
+      <div :class="$style.winnerHalf">
         <input
           :id="`winner-${props.game.id}`"
           type="radio"
           :name="`winlose-${props.game.id}`"
-          class="peer hidden"
+          :class="$style.winnerInput"
           :checked="props.game.outcome?.side == 'left'"
           value="left"
           @change="
             emit('setOutcome', props.game.teams[0]?.asGameWinner('left') ?? dummyWinner('left'))
           "
         />
-        <label
-          :for="`winner-${props.game.id}`"
-          class="inline-flex items-center justify-center w-full p-2 bg-white border-r border-l-2 border-y-2 rounded-l-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
+        <label :for="`winner-${props.game.id}`" :class="[$style.winnerLabel, $style.left]">
           <img
             :src="props.game.outcome?.side == 'left' ? winner : loser"
             width="35"
             height="35"
-            class="-mt-1 -mb-1"
+            :class="$style.outcomeIcon"
           />
           {{ leftName }}
         </label>
       </div>
-      <div class="inline-flex w-1/2 h-full">
+      <div :class="$style.winnerHalf">
         <input
           :id="`loser-${props.game.id}`"
           type="radio"
           :name="`winlose-${props.game.id}`"
-          class="peer hidden"
+          :class="$style.winnerInput"
           :checked="props.game.outcome?.side == 'right'"
           value="right"
           @change="
             emit('setOutcome', props.game.teams[1]?.asGameWinner('right') ?? dummyWinner('right'))
           "
         />
-        <label
-          :for="`loser-${props.game.id}`"
-          class="inline-flex items-center justify-center w-full p-2 bg-white border-l border-r-2 border-y-2 rounded-r-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
+        <label :for="`loser-${props.game.id}`" :class="[$style.winnerLabel, $style.right]">
           {{ rightName }}
           <img
             :src="props.game.outcome?.side == 'right' ? winner : loser"
             width="35"
             height="35"
-            class="-mt-1 -mb-1"
+            :class="$style.outcomeIcon"
           />
         </label>
       </div>
     </div>
-    <div v-if="props.game.isUnparseable()" class="w-full mt-4">
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+    <div v-if="props.game.isUnparseable()" :class="$style.unparseable">
+      <p :class="$style.muted">
         This recording <strong>could not be parsed</strong> by the replay packer.
       </p>
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+      <p :class="$style.muted">
         Please check that you have selected the <strong>correct file</strong>. Consider
-        <a class="underline" href="https://forms.gle/NDKqE8acLdYR2JrKA" target="_blank"
+        <a :class="$style.link" href="https://forms.gle/NDKqE8acLdYR2JrKA" target="_blank"
           >reporting an issue</a
         >.
       </p>
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+      <p :class="[$style.muted, $style.spacedTop]">
         The uploaded file will still be included in the downloaded Zip. You can proceed with the
         submission of your results regardless of this issue.
       </p>
     </div>
-    <div v-else class="w-full grid grid-cols-2 gap-12 justify-items-between mt-4 mb-12 pl-6 pr-6">
+    <div v-else :class="$style.teamsGrid">
       <GameTeam
         v-for="(team, teamIndex) in props.game.teams"
         :key="team.id"
         :team="team"
         :position="teamIndex % 2 ? 'right' : 'left'"
-        class="border-2 p-4"
+        :class="$style.teamBox"
       />
     </div>
-    <div class="flex justify-end">
-      <div class="flex flex-col content-end">
-        <span class="flex justify-end">
-          <expand-button
+    <div :class="$style.replaysFooter">
+      <div :class="$style.replaysCol">
+        <span :class="$style.replaysToggle">
+          <ExpandButton
             v-model="showReplays"
             :open-text="replayExpandText"
             :close-text="replayExpandText"
           />
         </span>
-        <ul
-          :class="showReplays ? ['max-h-screen'] : ['max-h-0']"
-          class="mt-2 transition-max-height overflow-hidden duration-200 justify-items-end"
-        >
+        <ul :class="[$style.replaysList, showReplays ? $style.open : $style.closed]">
           <li
             v-for="replay in props.game.replays"
             :key="replay.id"
-            class="flex gap-2 mb-2 flex-row items-center"
+            :class="$style.replayItem"
           >
             {{ replay.file.name }} ({{ readableSize(replay.file.size) }})
             <MoveReplayButton @click="showModal = replay.id" />
@@ -188,3 +173,146 @@ function moveGameReplay(replayId: number, targetGame: number) {
     </div>
   </div>
 </template>
+
+<style module>
+.orderControls {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.actions {
+  position: absolute;
+  right: 0;
+  top: 0.25rem;
+}
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+}
+.subtitle {
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+.warning {
+  color: var(--color-unparseable-text);
+}
+.muted {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+.winnerRow {
+  display: flex;
+  margin-top: var(--space-6);
+  padding: 0 var(--space-6);
+}
+.winnerHalf {
+  display: inline-flex;
+  width: 50%;
+  height: 100%;
+}
+.winnerInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.winnerLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-2);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  border-top: 2px solid var(--color-border-default);
+  border-bottom: 2px solid var(--color-border-default);
+}
+.left {
+  border-left: 2px solid var(--color-border-default);
+  border-right: 1px solid var(--color-border-default);
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+}
+.right {
+  border-right: 2px solid var(--color-border-default);
+  border-left: 1px solid var(--color-border-default);
+  border-top-right-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+.winnerLabel:hover {
+  background-color: var(--color-bg-hover);
+}
+.winnerInput:checked + .winnerLabel {
+  border-color: var(--color-border-accent);
+  color: var(--color-accent-text);
+}
+.outcomeIcon {
+  margin-top: -0.25rem;
+  margin-bottom: -0.25rem;
+}
+.unparseable {
+  width: 100%;
+  margin-top: var(--space-4);
+}
+.link {
+  text-decoration: underline;
+}
+.spacedTop {
+  margin-top: var(--space-2);
+}
+.teamsGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  justify-items: stretch;
+  margin-top: var(--space-4);
+  margin-bottom: 3rem;
+  padding: 0 var(--space-6);
+}
+.teamBox {
+  border: 2px solid var(--color-border-section);
+  padding: var(--space-4);
+}
+.replaysFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+.replaysCol {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-end;
+}
+.replaysToggle {
+  display: flex;
+  justify-content: flex-end;
+}
+.replaysList {
+  margin-top: var(--space-2);
+  overflow: hidden;
+  transition: max-height 0.2s;
+  justify-items: end;
+  list-style: none;
+  padding: 0;
+}
+.open {
+  max-height: 100vh;
+}
+.closed {
+  max-height: 0;
+}
+.replayItem {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  flex-direction: row;
+  align-items: center;
+}
+</style>

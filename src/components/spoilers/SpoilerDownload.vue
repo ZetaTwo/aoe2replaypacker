@@ -5,6 +5,8 @@ import { readableSize } from '@/lib/maths'
 import { commonPrefix } from '@/lib/strings'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import BaseCard from '@/components/common/BaseCard.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 
 const TARGET_SIZE = Math.round(1024 * 1024 * 9.75)
 const spoilerStore = useSpoilerStore()
@@ -80,58 +82,56 @@ function downloadZip() {
 </script>
 
 <template>
-  <div class="p-4 border-2 rounded-lg col-span-3 mt-4 mb-4">
-    <table>
+  <BaseCard spacing="top" :class="$style.cardSpacing">
+    <table :class="$style.table">
       <thead>
         <tr>
-          <th class="border p-1">Name</th>
-          <th class="border p-1">Size</th>
-          <th class="border p-1">Padded size</th>
-          <th class="border p-1"></th>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Padded size</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="border p-1">All replays</td>
-          <td class="border p-1"></td>
-          <td class="border p-1"></td>
-          <td class="border p-1">
-            <button
-              :disabled="!downloadEnabled"
-              class="btn text-1xl text-white dark:text-black"
-              :class="{
-                'bg-blue-500': downloadEnabled,
-                'bg-blue-200': !downloadEnabled,
-                'dark:bg-blue-700': downloadEnabled,
-                'dark:bg-blue-300': !downloadEnabled
-              }"
-              @click="downloadZip"
-            >
+          <td>All replays</td>
+          <td></td>
+          <td></td>
+          <td>
+            <BaseButton variant="primary" :disabled="!downloadEnabled" @click="downloadZip">
               Download
-            </button>
+            </BaseButton>
           </td>
         </tr>
         <tr v-for="recording in spoilerStore.recordings" :key="recording.name">
-          <td class="border p-1">{{ formatRecordName(recording.name) }}</td>
-          <td class="border p-1">{{ readableSize(recording.size) }}</td>
-          <td class="border p-1">{{ readableSize(paddedSize) }}</td>
-          <td class="border p-1">
-            <button
+          <td>{{ formatRecordName(recording.name) }}</td>
+          <td>{{ readableSize(recording.size) }}</td>
+          <td>{{ readableSize(paddedSize) }}</td>
+          <td>
+            <BaseButton
+              variant="primary"
               :disabled="!downloadEnabled"
-              class="btn text-1xl text-white dark:text-black"
-              :class="{
-                'bg-blue-500': downloadEnabled,
-                'bg-blue-200': !downloadEnabled,
-                'dark:bg-blue-700': downloadEnabled,
-                'dark:bg-blue-300': !downloadEnabled
-              }"
               @click="downloadPadded(recording)"
             >
               Download
-            </button>
+            </BaseButton>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
+  </BaseCard>
 </template>
+
+<style module>
+.cardSpacing {
+  margin-bottom: var(--space-4);
+}
+.table {
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  border: 1px solid var(--color-border-default);
+  padding: var(--space-1);
+}
+</style>

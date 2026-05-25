@@ -10,37 +10,29 @@ const { team } = defineProps<{
 </script>
 
 <template>
-  <div class="rounded-lg flex flex-col justify-stretch">
+  <div :class="$style.team">
     <template v-if="position == 'left'">
-      <div
-        v-for="player in team.players"
-        :key="player.profile"
-        class="flex items-center justify-end gap-4"
-      >
-        <div class="grow text-center overflow-hidden text-ellipsis font-medium dark:text-white">
+      <div v-for="player in team.players" :key="player.profile" :class="$style.rowLeft">
+        <div :class="$style.name">
           <a
             :href="`https://aoe2insights.com/user/relic/${player.profile}`"
-            class="text-blue-500 dark:text-blue-400 hover:underline"
+            :class="$style.link"
             target="_blank"
             >{{ player.name }}</a
           >
         </div>
-        <CivIcon :civ="player.civ.toLowerCase()" class="w-10 h-10 rounded-full" />
-        <PlayerColor :color="player.color ?? 0" class="w-9 h-9" />
+        <CivIcon :civ="player.civ.toLowerCase()" :class="$style.civ" />
+        <PlayerColor :color="player.color ?? 0" :class="$style.color" />
       </div>
     </template>
     <template v-if="position == 'right'">
-      <div
-        v-for="player in team.players"
-        :key="player.profile"
-        class="flex justify-start items-center gap-4"
-      >
-        <PlayerColor :color="player.color ?? 0" class="w-9 h-9" />
-        <CivIcon :civ="player.civ.toLowerCase()" class="w-10 h-10 rounded-full" />
-        <div class="grow text-center overflow-hidden text-ellipsis font-medium dark:text-white">
+      <div v-for="player in team.players" :key="player.profile" :class="$style.rowRight">
+        <PlayerColor :color="player.color ?? 0" :class="$style.color" />
+        <CivIcon :civ="player.civ.toLowerCase()" :class="$style.civ" />
+        <div :class="$style.name">
           <a
             :href="`https://aoe2insights.com/user/relic/${player.profile}`"
-            class="text-blue-500 dark:text-blue-400 hover:underline"
+            :class="$style.link"
             target="_blank"
             >{{ player.name }}</a
           >
@@ -49,3 +41,46 @@ const { team } = defineProps<{
     </template>
   </div>
 </template>
+
+<style module>
+.team {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  border-radius: var(--radius-lg);
+}
+.rowLeft,
+.rowRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.rowLeft {
+  justify-content: flex-end;
+}
+.rowRight {
+  justify-content: flex-start;
+}
+.name {
+  flex-grow: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.link {
+  color: var(--color-accent-text);
+}
+.link:hover {
+  text-decoration: underline;
+}
+.civ {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+}
+.color {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+</style>

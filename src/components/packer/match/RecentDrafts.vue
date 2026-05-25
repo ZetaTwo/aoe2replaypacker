@@ -79,48 +79,100 @@ function selectDraft(draft: draft) {
 </script>
 
 <template>
-  <div class="text-center p-4 border-2 col-span-3 mt-4 h-85 overflow-auto">
-    <h2 class="text-center text-2xl">Recent Drafts</h2>
-    <ul
-      v-if="recentDrafts.length > 0"
-      role="list"
-      class="divide-y divide-gray-100 dark:divide-gray-800"
-    >
-      <li
-        v-for="recentDraft in recentDrafts"
-        :key="recentDraft.draftId"
-        class="flex justify-between"
-      >
+  <div :class="$style.panel">
+    <h2 :class="$style.title">Recent Drafts</h2>
+    <ul v-if="recentDrafts.length > 0" role="list" :class="$style.list">
+      <li v-for="recentDraft in recentDrafts" :key="recentDraft.draftId" :class="$style.row">
         <button
-          class="flex-auto text-start hover:bg-slate-100 dark:hover:bg-slate-900"
-          :class="{
-            'bg-slate-300': [currentMapDraftId, currentCivDraftId].includes(recentDraft.draftId),
-            'dark:bg-slate-600': [currentMapDraftId, currentCivDraftId].includes(
-              recentDraft.draftId
-            )
-          }"
+          :class="[
+            $style.draftBtn,
+            [currentMapDraftId, currentCivDraftId].includes(recentDraft.draftId)
+              ? $style.selected
+              : null
+          ]"
           @click="selectDraft(recentDraft)"
         >
-          <div class="min-w-100 flex-auto px-4">
-            <span class="mt-1 text-xs text-gray-500 m-3">
+          <div :class="$style.draftBody">
+            <span :class="$style.meta">
               {{ getDraftTypeLabel(recentDraft, mapPresets, civPresets) }}</span
             >
-            <span class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50">{{
-              recentDraft.nameHost
-            }}</span>
-            <span class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400 m-3">vs</span>
-            <span class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50">{{
-              recentDraft.nameGuest
-            }}</span>
-            <span class="mt-1 truncate text-xs leading-5 text-gray-500 dark:text-gray-400 m-3"
+            <span :class="$style.name">{{ recentDraft.nameHost }}</span>
+            <span :class="$style.meta">vs</span>
+            <span :class="$style.name">{{ recentDraft.nameGuest }}</span>
+            <span :class="[$style.meta, $style.truncate]"
               >{{ recentDraft.title }} ({{ recentDraft.draftId }})</span
             >
           </div>
         </button>
       </li>
     </ul>
-    <p v-else class="text-gray-500 dark:text-gray-400">
-      No recent drafts found for the selected presets
-    </p>
+    <p v-else :class="$style.empty">No recent drafts found for the selected presets</p>
   </div>
 </template>
+
+<style module>
+.panel {
+  text-align: center;
+  padding: var(--space-4);
+  border: 2px solid var(--color-border-section);
+  margin-top: var(--space-4);
+  height: 21.25rem;
+  overflow: auto;
+}
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list > li + li {
+  border-top: 1px solid var(--color-border-section);
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+.draftBtn {
+  flex: 1 1 auto;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+}
+.draftBtn:hover {
+  background-color: var(--color-bg-hover);
+}
+.selected {
+  background-color: var(--color-bg-subtle);
+}
+.draftBody {
+  min-width: 25rem;
+  padding: 0 var(--space-4);
+}
+.meta {
+  margin: 0.25rem var(--space-3);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+.name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+.truncate {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.empty {
+  color: var(--color-text-muted);
+}
+</style>

@@ -1,12 +1,9 @@
 <template>
-  <button
-    class="w-7 h-7 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-    title="Move to..."
-  >
+  <button :class="$style.btn" title="Move to...">
     <svg
       id="move-files"
       xmlns="http://www.w3.org/2000/svg"
-      class="w-full h-full"
+      :class="$style.icon"
       viewBox="0 0 16 16"
     >
       <path
@@ -16,3 +13,24 @@
     </svg>
   </button>
 </template>
+
+<style module>
+.btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: var(--radius-md);
+  color: inherit;
+  cursor: pointer;
+}
+.btn:hover {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-hover);
+}
+.icon {
+  width: 100%;
+  height: 100%;
+}
+</style>

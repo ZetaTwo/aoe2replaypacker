@@ -24,10 +24,20 @@ const props = defineProps<{
         props.replayIdx
       )
     }}</span>
-    <span
-      v-if="game.isDummy()"
-      class="ml-5 bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2 py-0.5 rounded-sm dark:bg-gray-700 dark:text-blue-400 border border-blue-400"
-      >dummy file</span
-    >
+    <span v-if="game.isDummy()" :class="$style.badge">dummy file</span>
   </span>
 </template>
+
+<style module>
+.badge {
+  margin-left: var(--space-4);
+  margin-right: var(--space-2);
+  padding: 0.125rem var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-accent-text);
+  border: 1px solid var(--color-accent-text);
+}
+</style>

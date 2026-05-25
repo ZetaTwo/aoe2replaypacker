@@ -57,7 +57,7 @@ const civs: Record<string, string> = {
   wu: 'wu'
 }
 
-const civIcons = import.meta.glob('../assets/civs/*.png', {
+const civIcons = import.meta.glob('../../assets/civs/*.png', {
   query: { w: 40, h: 40, format: 'webp' },
   import: 'default',
   eager: true
@@ -69,7 +69,7 @@ const props = defineProps<{
 
 const icon = computed(() => {
   const iconName = civs[props.civ]
-  return civIcons[`../assets/civs/menu_techtree_${iconName}.png`]
+  return civIcons[`../../assets/civs/menu_techtree_${iconName}.png`]
 })
 
 const civTitle = computed(() => {
@@ -78,5 +78,11 @@ const civTitle = computed(() => {
 </script>
 
 <template>
-  <img class="inline" :src="icon" :alt="civTitle" :title="civTitle" />
+  <img :class="$style.icon" :src="icon" :alt="civTitle" :title="civTitle" />
 </template>
+
+<style module>
+.icon {
+  display: inline;
+}
+</style>

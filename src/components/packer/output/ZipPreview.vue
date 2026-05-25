@@ -12,8 +12,8 @@ const props = defineProps<{
 </script>
 
 <template>
-  <h2 class="text-center text-2xl">Preview</h2>
-  <div class="text-left">
+  <h2 :class="$style.title">Preview</h2>
+  <div :class="$style.tree">
     {{ zipFilename(player1, player2) }}<br />
     <template v-if="meta.civs || meta.maps"><span>├──metadata.json</span><br /></template>
     <template v-for="(game, gameIdx) in props.games" :key="game.id">
@@ -40,3 +40,13 @@ const props = defineProps<{
     </template>
   </div>
 </template>
+
+<style module>
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+}
+.tree {
+  text-align: left;
+}
+</style>

@@ -3,6 +3,7 @@ import { Game, type Replay } from '@/entities/game'
 import { computed, ref } from 'vue'
 import GameTeam from './GameTeam.vue'
 import RelativeDate from '@/components/common/RelativeDate.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import { format } from 'date-fns'
 import { UTCDate } from '@date-fns/utc'
 
@@ -30,28 +31,16 @@ const replayInfo = computed<Game>(() => new Game([props.replay]))
   <Teleport to="#modals">
     <div
       tabindex="-1"
-      class="overflow-y-auto overflow-x-hidden fixed top-40 inset-x-0 mx-auto z-50 w-1/2 h-3/4"
-      :class="{ hidden: !props.show }"
+      :class="[$style.backdrop, { [$style.hidden]: !props.show }]"
       :aria-hidden="!props.show"
     >
-      <div class="p-4 w-full max-h-full">
-        <!-- Modal content -->
-        <div class="border-2 bg-white rounded-lg shadow-xs dark:bg-gray-700">
-          <!-- Modal header -->
-          <div
-            class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200"
-          >
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Move recording to a different game
-            </h3>
-            <button
-              type="button"
-              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-toggle="select-modal"
-              @click="emit('close')"
-            >
+      <div :class="$style.frame">
+        <div :class="$style.dialog">
+          <div :class="$style.header">
+            <h3 :class="$style.title">Move recording to a different game</h3>
+            <button type="button" :class="$style.close" @click="emit('close')">
               <svg
-                class="w-3 h-3"
+                :class="$style.closeIcon"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -65,18 +54,16 @@ const replayInfo = computed<Game>(() => new Game([props.replay]))
                   d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                 />
               </svg>
-              <span class="sr-only">Close modal</span>
+              <span :class="$style.srOnly">Close modal</span>
             </button>
           </div>
-          <!-- Modal body -->
-          <div class="flex flex-col gap-2 p-4 md:p-5">
-            <div class="w-full grid grid-cols-2 gap-6 justify-items-between">
-              <game-team
+          <div :class="$style.body">
+            <div :class="$style.teamsGrid">
+              <GameTeam
                 v-for="(team, index) in replayInfo.teams"
                 :key="team.id"
                 :team="team"
                 :position="index % 2 == 0 ? 'left' : 'right'"
-                class="p-0"
               />
               <p>
                 Played on {{ replayInfo.mapName }} <RelativeDate :date="replayInfo.date" /> and was
@@ -84,27 +71,130 @@ const replayInfo = computed<Game>(() => new Game([props.replay]))
               </p>
             </div>
             <div>
-              <label for="game" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >Move to</label
-              >
-              <select
-                id="game"
-                v-model="targetGame"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-              >
+              <label for="game" :class="$style.label">Move to</label>
+              <select id="game" v-model="targetGame" :class="$style.select">
                 <option :value="-1">New game</option>
                 <option v-for="game in games" :key="game" :value="game">Game {{ game + 1 }}</option>
               </select>
             </div>
-            <button
-              class="btn text-xl text-white dark:text-black bg-blue-500 dark:bg-blue-700"
-              @click="emit('move', targetGame)"
-            >
+            <BaseButton variant="primary" @click="emit('move', targetGame)">
               Move recording
-            </button>
+            </BaseButton>
           </div>
         </div>
       </div>
     </div>
   </Teleport>
 </template>
+
+<style module>
+.backdrop {
+  position: fixed;
+  top: 10rem;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 50;
+  width: 50%;
+  height: 75%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.hidden {
+  display: none;
+}
+.frame {
+  padding: var(--space-4);
+  width: 100%;
+  max-height: 100%;
+}
+.dialog {
+  border: 2px solid var(--color-border-section);
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border-section);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-left: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.close:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+.closeIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+.teamsGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  justify-items: stretch;
+}
+.label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.select {
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  font-size: var(--font-size-sm);
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+}
+.select:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -1px;
+  border-color: var(--color-accent);
+}
+</style>

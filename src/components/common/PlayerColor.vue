@@ -4,50 +4,42 @@ const props = defineProps<{
 }>()
 </script>
 <template>
-  <div
-    :class="[
-      'text-center',
-      'text-gray-800',
-      'font-bold',
-      'border-2',
-      'grid',
-      'content-center',
-      $style[`player-color-${props.color}`]
-    ]"
-  >
+  <div :class="[$style.swatch, $style[`color${props.color}`]]">
     <span>{{ props.color }}</span>
   </div>
 </template>
-<style lang="css" module>
-.player-color-1 {
-  background-color: #3e59f8;
-}
 
-.player-color-2 {
-  background-color: #eb0000;
+<style module>
+.swatch {
+  display: grid;
+  align-content: center;
+  text-align: center;
+  font-weight: 700;
+  color: #111827;
+  border: 2px solid var(--color-border-default);
 }
-
-.player-color-3 {
-  background-color: #00fe00;
+.color1 {
+  background-color: var(--player-color-1);
 }
-
-.player-color-4 {
-  background-color: #ffff01;
+.color2 {
+  background-color: var(--player-color-2);
 }
-
-.player-color-5 {
-  background-color: #00ffff;
+.color3 {
+  background-color: var(--player-color-3);
 }
-
-.player-color-6 {
-  background-color: #bd2bbb;
+.color4 {
+  background-color: var(--player-color-4);
 }
-
-.player-color-7 {
-  background-color: #797979;
+.color5 {
+  background-color: var(--player-color-5);
 }
-
-.player-color-8 {
-  background-color: #f99200;
+.color6 {
+  background-color: var(--player-color-6);
+}
+.color7 {
+  background-color: var(--player-color-7);
+}
+.color8 {
+  background-color: var(--player-color-8);
 }
 </style>

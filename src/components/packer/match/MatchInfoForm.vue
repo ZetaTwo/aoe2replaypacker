@@ -203,8 +203,8 @@ watch(meta, () => {
 </script>
 
 <template>
-  <div class="text-center p-4 border-2 rounded-lg mt-4">
-    <h2 class="text-center text-2xl mb-2">Game Info</h2>
+  <div :class="$style.panel">
+    <h2 :class="$style.title">Match Info</h2>
     <div v-if="boPa != null && expectedGamesCount > 0">
       <template v-if="boPa == MatchSetType.BestOf">Best of</template>
       <template v-else>Play all</template>
@@ -213,42 +213,38 @@ watch(meta, () => {
     <input
       v-model="player1"
       placeholder="Player 1 Name"
-      class="border-1 bg-gray-100 dark:bg-gray-800 p-2 rounded-sm"
+      :class="$style.input"
       type="text"
-    /><span class="mx-10">vs</span>
+    /><span :class="$style.vs">vs</span>
     <input
       v-model="player2"
       placeholder="Player 2 Name"
-      class="border-1 bg-gray-100 dark:bg-gray-800 p-2 rounded-sm"
+      :class="$style.input"
       type="text"
     />
     <template v-if="drafts != 'none'">
-      <h3 class="text-center text-xl mt-4">
+      <h3 :class="$style.draftsTitle">
         Drafts<template v-if="!mapPresets && !civPresets"> (optional)</template>
       </h3>
-      <p class="text-center">Input aoe2cm.net civ/map draft ID/URL.</p>
-      <div class="grid grid-cols-2">
-        <div v-if="drafts == 'both' || drafts == 'map'" class="mb-6">
-          <label class="text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="maps">
-            Map draft</label
-          >
+      <p :class="$style.center">Input aoe2cm.net civ/map draft ID/URL.</p>
+      <div :class="$style.draftGrid">
+        <div v-if="drafts == 'both' || drafts == 'map'" :class="$style.draftCell">
+          <label :class="$style.fieldLabel" for="maps"> Map draft</label>
           <input
             id="maps"
             v-model="mapsDraftURI"
-            class="border-1 bg-gray-100 dark:bg-gray-800 p-2 rounded-sm ml-2"
+            :class="[$style.input, $style.inputSpacer]"
             type="text"
             placeholder="e.g. XZedf"
           />
-          <p v-if="errors.maps" class="text-red-500 dark:text-red-500 text-xs italic">
-            {{ errors.maps }}
-          </p>
-          <div v-if="meta.maps" class="text-left px-8 pt-4">
-            <p class="text-center">{{ meta.maps.host }} vs {{ meta.maps.guest }}</p>
-            <ul class="text-center flex w-full flex-wrap justify-center">
-              <li v-for="(map, mapIdx) in meta.maps.pickedMaps" :key="mapIdx" class="mx-2">
-                <div class="aspect-square h-36">
+          <p v-if="errors.maps" :class="$style.error">{{ errors.maps }}</p>
+          <div v-if="meta.maps" :class="$style.mapPicks">
+            <p :class="$style.center">{{ meta.maps.host }} vs {{ meta.maps.guest }}</p>
+            <ul :class="$style.mapList">
+              <li v-for="(map, mapIdx) in meta.maps.pickedMaps" :key="mapIdx" :class="$style.mapItem">
+                <div :class="$style.mapImageWrap">
                   <img
-                    class="mx-auto w-full h-full"
+                    :class="$style.mapImage"
                     :src="mapImageUrl(meta.maps.availableMaps[map]?.image ?? null)"
                     :alt="meta.maps.availableMaps[map]?.name ?? 'Unknown map'"
                   />
@@ -260,35 +256,27 @@ watch(meta, () => {
             </ul>
           </div>
         </div>
-        <div v-if="drafts == 'both' || drafts == 'civ'" class="mb-6">
-          <label class="text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" for="civs">
-            Civ draft</label
-          >
+        <div v-if="drafts == 'both' || drafts == 'civ'" :class="$style.draftCell">
+          <label :class="$style.fieldLabel" for="civs"> Civ draft</label>
           <input
             id="civs"
             v-model="civDraftURI"
-            class="border-1 bg-gray-100 dark:bg-gray-800 p-2 rounded-sm ml-2"
+            :class="[$style.input, $style.inputSpacer]"
             type="text"
             placeholder="e.g. vbvIP"
           />
-          <p v-if="errors.civs" class="text-red-500 dark:text-red-500 text-xs italic">
-            {{ errors.civs }}
-          </p>
-          <div v-if="meta.civs" class="text-left px-8 pt-4">
+          <p v-if="errors.civs" :class="$style.error">{{ errors.civs }}</p>
+          <div v-if="meta.civs" :class="$style.civPicks">
             <p>{{ meta.civs.host }} vs {{ meta.civs.guest }}</p>
-            <ul class="pl-8">
-              <li v-for="(civ, civIdx) in meta.civs.hostCivs" :key="civIdx" class="capitalize mt-2">
+            <ul :class="$style.civList">
+              <li v-for="(civ, civIdx) in meta.civs.hostCivs" :key="civIdx" :class="$style.civItem">
                 <CivIcon :civ="civ.toLowerCase()" />
                 {{ civ }}
               </li>
             </ul>
-            <p class="pl-20">vs</p>
-            <ul class="pl-8">
-              <li
-                v-for="(civ, civIdx) in meta.civs.guestCivs"
-                :key="civIdx"
-                class="capitalize mt-2"
-              >
+            <p :class="$style.civVs">vs</p>
+            <ul :class="$style.civList">
+              <li v-for="(civ, civIdx) in meta.civs.guestCivs" :key="civIdx" :class="$style.civItem">
                 <CivIcon :civ="civ.toLowerCase()" />
                 {{ civ }}
               </li>
@@ -297,5 +285,104 @@ watch(meta, () => {
         </div>
       </div>
     </template>
+    <slot />
   </div>
 </template>
+
+<style module>
+.panel {
+  text-align: center;
+  padding: var(--space-4);
+  border: 2px solid var(--color-border-section);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-4);
+}
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
+}
+.input {
+  padding: var(--space-2);
+  border: 1px solid var(--color-border-default);
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+}
+.inputSpacer {
+  margin-left: var(--space-2);
+}
+.vs {
+  margin: 0 2.5rem;
+}
+.draftsTitle {
+  text-align: center;
+  font-size: var(--font-size-xl);
+  margin-top: var(--space-4);
+}
+.center {
+  text-align: center;
+}
+.draftGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.draftCell {
+  margin-bottom: var(--space-6);
+}
+.fieldLabel {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+.mapPicks {
+  text-align: left;
+  padding: 0 var(--space-8);
+  padding-top: var(--space-4);
+}
+.mapList {
+  text-align: center;
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.mapItem {
+  margin: 0 var(--space-2);
+}
+.mapImageWrap {
+  aspect-ratio: 1 / 1;
+  height: 9rem;
+}
+.mapImage {
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+.civPicks {
+  text-align: left;
+  padding: 0 var(--space-8);
+  padding-top: var(--space-4);
+}
+.civList {
+  padding-left: var(--space-8);
+  list-style: none;
+  margin: 0;
+}
+.civItem {
+  text-transform: capitalize;
+  margin-top: var(--space-2);
+}
+.civVs {
+  padding-left: 5rem;
+}
+</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ExpandButton from '@/components/common/ExpandButton.vue'
+import BaseCard from '@/components/common/BaseCard.vue'
 
 const expanded = ref(false)
 defineProps<{
@@ -9,24 +10,21 @@ defineProps<{
 </script>
 
 <template>
-  <div class="p-4 border-2 rounded-lg col-span-3 mb-4">
-    <h1 class="text-3xl text-center">AoE2 Replay Pack Generator</h1>
-    <h2 v-if="tournamentTitle" class="text-2xl text-center">{{ tournamentTitle }}</h2>
+  <BaseCard spacing="bottom">
+    <h1 :class="$style.title">AoE2 Replay Pack Generator</h1>
+    <h2 v-if="tournamentTitle" :class="$style.subtitle">{{ tournamentTitle }}</h2>
     <p>
       This page will help you create a zip file of replays for submitting your AoE2 match results.
     </p>
-    <expand-button v-model="expanded" open-text="Show Help" close-text="Hide Help" />
-    <div
-      :class="expanded ? ['max-h-screen'] : ['max-h-0']"
-      class="mt-2 transition-max-height overflow-hidden duration-1000"
-    >
+    <ExpandButton v-model="expanded" open-text="Show Help" close-text="Hide Help" />
+    <div :class="[$style.collapse, expanded ? $style.open : $style.closed]">
       <p>To use it follow, these simple steps:</p>
-      <ol class="mt-2 list-decimal list-inside">
+      <ol :class="$style.steps">
         <li>If applicable, fill out map and civ drafts</li>
         <li>Unless already done via the draft, fill out the player names</li>
         <li>
           Add replays by clicking the add replay button and navigating to the replay directory
-          <ol class="list-decimal list-inside ml-4" type="a">
+          <ol :class="$style.substeps" type="a">
             <li>Go to "%USERPROFILE%\Games\Age of Empires 2 DE"</li>
             <li>Click the folder with a bunch of numbers</li>
             <li>Go to the "savegame" folder</li>
@@ -38,13 +36,48 @@ defineProps<{
           template for easy reporting of the results
         </li>
       </ol>
-      <p class="mt-2">
+      <p :class="$style.note">
         Note: You only need to select actual game replays. The tool will add automatically generate
         dummy files as needed.
       </p>
-      <p class="mt-2">
+      <p :class="$style.note">
         Technical note: All of this is done in your browser, no data is uploaded anywhere.
       </p>
     </div>
-  </div>
+  </BaseCard>
 </template>
+
+<style module>
+.title {
+  font-size: var(--font-size-3xl);
+  text-align: center;
+}
+.subtitle {
+  font-size: var(--font-size-2xl);
+  text-align: center;
+}
+.collapse {
+  margin-top: var(--space-2);
+  overflow: hidden;
+  transition: max-height 1s;
+}
+.open {
+  max-height: 100vh;
+}
+.closed {
+  max-height: 0;
+}
+.steps {
+  margin-top: var(--space-2);
+  list-style: decimal;
+  list-style-position: inside;
+}
+.substeps {
+  list-style: decimal;
+  list-style-position: inside;
+  margin-left: var(--space-4);
+}
+.note {
+  margin-top: var(--space-2);
+}
+</style>

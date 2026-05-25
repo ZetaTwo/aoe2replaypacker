@@ -14,6 +14,9 @@ import GameList from './games/GameList.vue'
 import ZipPreview from './output/ZipPreview.vue'
 import DiscordMessage from './output/DiscordMessage.vue'
 import ToggleButton from '@/components/common/ToggleButton.vue'
+import BaseCard from '@/components/common/BaseCard.vue'
+import BaseAlert from '@/components/common/BaseAlert.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import { useGamesStore } from '@/stores/games'
 import type { ReplayMetadata, ReplayErrors } from '@/entities/gamemeta'
 import { MatchSetDefinition, MatchSetType } from '@/entities/matchset'
@@ -376,7 +379,7 @@ function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
       :map-presets="mapPresets"
     />
     <template #fallback>
-      <div class="text-center p-4 border-2 col-span-3 mt-4 h-80">Loading Drafts...</div>
+      <div :class="$style.fallback">Loading Drafts...</div>
     </template>
   </Suspense>
   <MatchInfoForm
@@ -390,75 +393,69 @@ function updateMeta(newErrors: ReplayErrors, newMeta: ReplayMetadata) {
     :drafts="drafts"
     :bo-pa="boPa"
     @update-meta="updateMeta"
-  />
+  >
+    <MatchSetPicker
+      v-if="!setTypeRestrictions"
+      :games-count="expectedGamesCount"
+      @set-games="setExpectedGamesCount"
+      @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
+    />
+    <TournamentSetPicker
+      v-else
+      :set-types="setTypeRestrictions"
+      :type="boPa"
+      :length="expectedGamesCount"
+      @set-games="setExpectedGamesCount"
+      @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
+    />
+  </MatchInfoForm>
 
-  <MatchSetPicker
-    v-if="!setTypeRestrictions"
-    :games-count="expectedGamesCount"
-    @set-games="setExpectedGamesCount"
-    @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
-  />
-  <TournamentSetPicker
-    v-else
-    :set-types="setTypeRestrictions"
-    :type="boPa"
-    :length="expectedGamesCount"
-    @set-games="setExpectedGamesCount"
-    @set-bo-pa="(newBoPa) => (boPa = newBoPa)"
-  />
+  <GameList :show-results="showResults">
+    <ToggleButton
+      v-model="showResults"
+      :class="$style.alignStart"
+      label="Show results (spoilers)"
+    />
+    <ReplayDropzone />
+  </GameList>
 
-  <ToggleButton v-model="showResults" class="mt-4" label="Show results (spoilers)" />
-
-  <ReplayDropzone />
-  <GameList :show-results="showResults" />
-
-  <div id=" message_box" class="mt-4 text-center p-4 border-2 rounded-lg col-span-3 hidden"></div>
-  <div class="text-center p-4 border-2 rounded-lg col-span-3 mt-4">
+  <BaseCard align="center" spacing="top">
     <ZipPreview :games="gamesStore.games" :player1="player1" :player2="player2" :meta="meta" />
-    <button
+    <BaseButton
+      variant="primary"
+      size="lg"
       :disabled="!downloadEnabled"
-      class="btn mt-3 text-2xl text-white dark:text-black"
-      :class="{
-        'bg-blue-500': downloadEnabled,
-        'bg-blue-200': !downloadEnabled,
-        'dark:bg-blue-700': downloadEnabled,
-        'dark:bg-blue-300': !downloadEnabled
-      }"
       @click="downloadZip"
     >
       Download
-    </button>
-    <div
-      v-if="!downloadEnabled"
-      class="p-2 mt-4 text-sm text-amber-800 rounded-lg bg-ruby-100 dark:bg-ruby-400 dark:text-ruby-800"
-    >
-      {{ downloadDisabledMessage }}
-    </div>
-    <div
-      v-if="downloadWarningReplayMissing"
-      class="p-2 mt-4 text-sm text-amber-800 rounded-lg bg-amber-100 dark:bg-amber-400 dark:text-amber-800"
-    >
+    </BaseButton>
+    <BaseAlert v-if="!downloadEnabled" tone="error">{{ downloadDisabledMessage }}</BaseAlert>
+    <BaseAlert v-if="downloadWarningReplayMissing">
       WARNING: You have selected "play all" but not provided all replays.
-    </div>
-    <div
-      v-if="downloadWarningCivDraftMissing"
-      class="p-2 mt-4 text-sm text-amber-800 rounded-lg bg-amber-100 dark:bg-amber-400 dark:text-amber-800"
-    >
+    </BaseAlert>
+    <BaseAlert v-if="downloadWarningCivDraftMissing">
       WARNING: You have not provided a civilization draft link.
-    </div>
-    <div
-      v-if="downloadWarningMapDraftMissing"
-      class="p-2 mt-4 text-sm text-amber-800 rounded-lg bg-amber-100 dark:bg-amber-400 dark:text-amber-800"
-    >
+    </BaseAlert>
+    <BaseAlert v-if="downloadWarningMapDraftMissing">
       WARNING: You have not provided a map draft link.
-    </div>
-    <div
-      v-if="downloadWarningScore"
-      class="p-2 mt-4 text-sm text-amber-800 rounded-lg bg-amber-100 dark:bg-amber-400 dark:text-amber-800"
-    >
+    </BaseAlert>
+    <BaseAlert v-if="downloadWarningScore">
       WARNING: The score does not make sense for a best-of set.
-    </div>
-  </div>
+    </BaseAlert>
+  </BaseCard>
 
   <DiscordMessage :discord-message="discordMessage" />
 </template>
+
+<style module>
+.fallback {
+  text-align: center;
+  padding: var(--space-4);
+  border: 2px solid var(--color-border-section);
+  margin-top: var(--space-4);
+  height: 20rem;
+}
+.alignStart {
+  align-self: flex-start;
+}
+</style>

@@ -6,11 +6,65 @@ const props = defineProps<{
 const model = defineModel<boolean>()
 </script>
 <template>
-  <label class="inline-flex items-center cursor-pointer">
-    <input v-model="model" type="checkbox" class="sr-only peer" />
-    <div
-      class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"
-    ></div>
-    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ props.label }}</span>
+  <label :class="$style.wrapper">
+    <input v-model="model" type="checkbox" :class="$style.input" />
+    <span :class="$style.track"></span>
+    <span :class="$style.label">{{ props.label }}</span>
   </label>
 </template>
+
+<style module>
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.track {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  background-color: var(--color-border-default);
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+.track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-default);
+  border-radius: 9999px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.input:checked ~ .track {
+  background-color: var(--color-accent);
+}
+.input:checked ~ .track::after {
+  transform: translateX(100%);
+  border-color: #ffffff;
+}
+.input:focus-visible ~ .track {
+  outline: 4px solid var(--color-accent-disabled);
+  outline-offset: 1px;
+}
+.label {
+  margin-inline-start: var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+</style>

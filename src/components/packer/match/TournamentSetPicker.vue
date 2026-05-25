@@ -44,27 +44,79 @@ watch(chosenSetDefinition, (newType, oldType) => {
 })
 </script>
 <template>
-  <div class="mt-4 text-center">
-    <ul class="w-full gap-6 flex flex-row justify-center">
-      <li v-for="setType in props.setTypes" :key="setType.label()" class="basis-2/11">
+  <div :class="$style.wrap">
+    <ul :class="$style.list">
+      <li v-for="setType in props.setTypes" :key="setType.label()" :class="$style.cell">
         <input
           :id="`${setType.type}-${setType.length}`"
           v-model="chosenSetDefinition"
           name="set-definition"
           type="radio"
           :value="setType"
-          class="hidden peer"
+          :class="$style.input"
           required
         />
-        <label
-          :for="`${setType.type}-${setType.length}`"
-          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-        >
-          <div class="block w-full">
-            <div class="text-center w-full text-lg font-semibold">{{ setType.label() }}</div>
-          </div>
+        <label :for="`${setType.type}-${setType.length}`" :class="$style.tile">
+          <div :class="$style.tileLabel">{{ setType.label() }}</div>
         </label>
       </li>
     </ul>
   </div>
 </template>
+
+<style module>
+.wrap {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-6);
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cell {
+  flex-basis: 18.18%;
+}
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.tile:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+.input:checked + .tile {
+  color: var(--color-accent-text);
+  border-color: var(--color-border-accent);
+}
+.tileLabel {
+  text-align: center;
+  width: 100%;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+</style>

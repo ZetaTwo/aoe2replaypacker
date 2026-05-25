@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import BaseCard from '@/components/common/BaseCard.vue'
 
 const props = defineProps<{ discordMessage: string }>()
 
@@ -18,27 +19,24 @@ async function copyDiscordMessage() {
 </script>
 
 <template>
-  <div class="p-4 border-2 rounded-lg col-span-3 mt-4">
-    <h2 class="text-center text-2xl">Discord Message</h2>
-    <div class="flex justify-center">
-      <div class="w-full max-w-lg text-left">
-        <p class="mb-4">
+  <BaseCard spacing="top">
+    <h2 :class="$style.title">Discord Message</h2>
+    <div :class="$style.row">
+      <div :class="$style.content">
+        <p :class="$style.intro">
           Complete your submission by upload the file in the correct discord channel and use the
           following message as a template. Remember to <strong>replace the score</strong> and to
           <strong>tag your opponent</strong>:
         </p>
-        <div class="relative bg-gray-100 rounded-lg dark:bg-gray-600 p-4 pt-12">
+        <div :class="$style.bubble">
           <div>
             <pre>{{ discordMessage }}</pre>
           </div>
-          <div class="absolute top-2 end-2 bg-gray-100 dark:bg-gray-600">
-            <button
-              class="text-gray-900 dark:text-gray-400 m-0.5 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border"
-              @click="copyDiscordMessage"
-            >
-              <span v-if="!copyDone" id="default-message" class="inline-flex items-center">
+          <div :class="$style.copyWrap">
+            <button :class="$style.copyBtn" @click="copyDiscordMessage">
+              <span v-if="!copyDone" :class="$style.inlineIcon">
                 <svg
-                  class="w-3 h-3 me-1.5"
+                  :class="$style.copyIcon"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -48,11 +46,11 @@ async function copyDiscordMessage() {
                     d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"
                   />
                 </svg>
-                <span class="text-xs font-semibold">Copy message</span>
+                <span :class="$style.copyText">Copy message</span>
               </span>
-              <span v-else id="success-message" class="inline-flex items-center">
+              <span v-else :class="$style.inlineIcon">
                 <svg
-                  class="w-3 h-3 text-blue-700 dark:text-blue-500 me-1.5"
+                  :class="[$style.copyIcon, $style.success]"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -66,12 +64,74 @@ async function copyDiscordMessage() {
                     d="M1 5.917 5.724 10.5 15 1.5"
                   />
                 </svg>
-                <span class="text-xs font-semibold text-blue-700 dark:text-blue-500">Copied</span>
+                <span :class="[$style.copyText, $style.success]">Copied</span>
               </span>
             </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </BaseCard>
 </template>
+
+<style module>
+.title {
+  text-align: center;
+  font-size: var(--font-size-2xl);
+}
+.row {
+  display: flex;
+  justify-content: center;
+}
+.content {
+  width: 100%;
+  max-width: 32rem;
+  text-align: left;
+}
+.intro {
+  margin-bottom: var(--space-4);
+}
+.bubble {
+  position: relative;
+  padding: var(--space-4);
+  padding-top: 3rem;
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-lg);
+}
+.copyWrap {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-end: var(--space-2);
+}
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) 0.625rem;
+  margin: 0.125rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.copyBtn:hover {
+  background-color: var(--color-bg-hover);
+}
+.inlineIcon {
+  display: inline-flex;
+  align-items: center;
+}
+.copyIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-inline-end: 0.375rem;
+}
+.copyText {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.success {
+  color: var(--color-accent-hover);
+}
+</style>

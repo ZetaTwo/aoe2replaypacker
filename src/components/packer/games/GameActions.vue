@@ -9,16 +9,16 @@ const { gameIndex, showClear = true } = defineProps<{
 }>()
 </script>
 <template>
-  <div class="flex justify-end">
+  <div :class="$style.actions">
     <button
       v-if="showClear"
-      class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-hidden focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
+      :class="$style.iconBtn"
       type="button"
       title="Clear info"
       @click="gamesStore.clearGame(gameIndex)"
     >
       <svg
-        class="w-6 h-6 inline-block"
+        :class="$style.icon"
         aria-hidden="true"
         fill="currentColor"
         viewBox="0 0 1920 1920"
@@ -29,16 +29,16 @@ const { gameIndex, showClear = true } = defineProps<{
           fill-rule="evenodd"
         ></path>
       </svg>
-      <span class="h-6 p-3">Clear info</span>
+      <span :class="$style.label">Clear info</span>
     </button>
     <button
-      class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-hidden focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
+      :class="$style.iconBtn"
       type="button"
       title="Remove game"
       @click="gamesStore.removeGame(gameIndex)"
     >
       <svg
-        class="w-6 h-6 text-red-400 dark:text-red-300 inline-block"
+        :class="[$style.icon, $style.danger]"
         aria-hidden="true"
         fill="none"
         stroke="currentColor"
@@ -59,7 +59,43 @@ const { gameIndex, showClear = true } = defineProps<{
           stroke-linejoin="round"
         ></path>
       </svg>
-      <span class="h-6 p-3">Remove game</span>
+      <span :class="$style.label">Remove game</span>
     </button>
   </div>
 </template>
+
+<style module>
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  padding: 0.375rem;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.iconBtn:hover {
+  background-color: var(--color-bg-hover);
+}
+.iconBtn:focus-visible {
+  outline: 4px solid var(--color-border-default);
+  outline-offset: -2px;
+}
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-block;
+}
+.danger {
+  color: #f87171;
+}
+.label {
+  padding: 0 var(--space-3);
+}
+</style>

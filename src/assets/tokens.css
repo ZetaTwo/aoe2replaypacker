@@ -1,0 +1,113 @@
+:root {
+  /* Surfaces */
+  --color-bg-page: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-subtle: #f9fafb;
+  --color-bg-input: #ffffff;
+  --color-bg-hover: #f3f4f6;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-on-accent: #ffffff;
+
+  /* Borders */
+  --color-border-default: #e5e7eb;
+  --color-border-section: #e5e7eb;
+  --color-border-strong: #9ca3af;
+  --color-border-accent: #2563eb;
+
+  /* Accent (primary actions) */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-disabled: #bfdbfe;
+  --color-accent-text: #2563eb;
+
+  /* Semantic feedback */
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
+  --color-error-bg: #fecaca;
+  --color-error-text: #7f1d1d;
+  --color-unparseable-text: #ca8a04;
+
+  /* Gray scale for occasional direct use (buttons, disabled states) */
+  --color-gray-button-bg: #e5e7eb;
+  --color-gray-button-text: #111827;
+  --color-gray-button-disabled-text: #9ca3af;
+
+  /* Player colors (fixed AoE2 brand values) */
+  --player-color-1: #3e59f8;
+  --player-color-2: #eb0000;
+  --player-color-3: #00fe00;
+  --player-color-4: #ffff01;
+  --player-color-5: #00ffff;
+  --player-color-6: #bd2bbb;
+  --player-color-7: #797979;
+  --player-color-8: #f99200;
+
+  /* Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  /* Typography */
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* Layout */
+  --container-max-width: 64rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-page: #111827;
+    --color-bg-card: #1f2937;
+    --color-bg-subtle: #374151;
+    --color-bg-input: #1f2937;
+    --color-bg-hover: #374151;
+
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-text-muted: #9ca3af;
+    --color-text-on-accent: #000000;
+
+    --color-border-default: #374151;
+    --color-border-strong: #6b7280;
+    --color-border-accent: #60a5fa;
+
+    --color-accent: #1d4ed8;
+    --color-accent-hover: #1e40af;
+    --color-accent-disabled: #93c5fd;
+    --color-accent-text: #60a5fa;
+
+    --color-warning-bg: #fbbf24;
+    --color-warning-text: #78350f;
+    --color-error-bg: #f87171;
+    --color-error-text: #7f1d1d;
+    --color-unparseable-text: #fde047;
+
+    --color-gray-button-bg: #4b5563;
+    --color-gray-button-text: #f9fafb;
+    --color-gray-button-disabled-text: #9ca3af;
+  }
+}
